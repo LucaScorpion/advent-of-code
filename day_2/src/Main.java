@@ -26,5 +26,6 @@ public class Main {
 
         ids = new BoxIdList(lines);
         System.out.printf("Checksum: %d.\n", ids.getChecksum());
+        System.out.printf("Found matching id: %s\n", ids.findMatchingId());
     }
 }
