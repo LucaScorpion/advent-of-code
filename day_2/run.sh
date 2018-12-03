@@ -1,4 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-javac -d out src/* && java -cp out Main
+dir=$(dirname $0)
+outDir="$dir/out"
+javac -d "$outDir" "$dir/src/"* && java -cp "$outDir" Main
