@@ -8,14 +8,14 @@ const reader = readline.createInterface({
 
 const claimRegex = /^#\d+ @ (\d+),(\d+): (\d+)x(\d+)$/;
 
-let fabric = {
-    claimedPieces: 0,
-    // x -> y -> claimed by count
-    pieces: []
-};
+let fabric = [];
 
 process.stdin.on('end', () => {
-    console.log('Claimed pieces:', fabric.claimedPieces);
+    let claimedPieces = fabric
+        .map(col => col ? col.reduce((acc, val) => acc + (val > 1 ? 1 : 0), 0) : 0)
+        .reduce((acc, val) => acc + val, 0);
+
+    console.log('Claimed pieces:', claimedPieces);
 });
 reader.on('line', processLine);
 
@@ -41,16 +41,10 @@ function claimFabric(claim) {
 }
 
 function claimInch(x, y) {
-    if (!fabric.pieces[x]) {
-        fabric.pieces[x] = [];
+    if (!fabric[x]) {
+        fabric[x] = [];
     }
 
     // Apply the claim.
-    let oldClaim = fabric.pieces[x][y] || 0;
-    fabric.pieces[x][y] = oldClaim + 1;
-
-    // Check if this is a new claim.
-    if (oldClaim === 0) {
-        fabric.claimedPieces++;
-    }
+    fabric[x][y] = (fabric[x][y] || 0) + 1;
 }
