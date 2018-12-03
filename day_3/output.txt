@@ -1,1 +1,2 @@
-Claimed pieces: 111630
+Claimed square inches: 111630
+Valid claim id: 724

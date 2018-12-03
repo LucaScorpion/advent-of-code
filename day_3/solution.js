@@ -8,21 +8,17 @@ const reader = readline.createInterface({
 
 const claimRegex = /^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/;
 
+// [x] -> [y] -> [claimId]
 let fabric = [];
-// A claim is valid if it is the only one.
+// A claim is valid if it is the only one on a square inch.
 let claims = {};
 
 process.stdin.on('end', () => {
     let claimedPieces = fabric
-        .map(col => {
-            if (!col) {
-                return 0;
-            }
-            return col.reduce((acc, val) => acc + (val.length > 1 ? 1 : 0), 0);
-        })
+        .map(col => col ? col.reduce((acc, val) => acc + (val.length > 1 ? 1 : 0), 0) : 0)
         .reduce((acc, val) => acc + val, 0);
 
-    console.log('Claimed pieces:', claimedPieces);
+    console.log('Claimed square inches:', claimedPieces);
 
     let validClaims = Object.values(claims)
         .filter(c => c.valid)
