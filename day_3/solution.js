@@ -6,62 +6,41 @@ const reader = readline.createInterface({
     input: process.stdin
 });
 
-const claimRegex = /^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/;
+const claimRegex = /^#\d+ @ (\d+),(\d+): (\d+)x(\d+)$/;
 
-let claims = [];
 let fabric = {
-    width: 0,
-    height: 0,
     claimedPieces: 0,
+    // x -> y -> claimed by count
     pieces: []
 };
 
-process.stdin.on('end', processClaims);
+process.stdin.on('end', () => {
+    console.log('Claimed pieces:', fabric.claimedPieces);
+});
 reader.on('line', processLine);
 
 function processLine(line) {
     const groups = claimRegex.exec(line);
     const claim = {
-        id: groups[0],
-        left: groups[1],
-        top: groups[2],
-        width: groups[3],
-        height: groups[4]
+        left: parseInt(groups[1], 10),
+        top: parseInt(groups[2], 10),
+        width: parseInt(groups[3], 10),
+        height: parseInt(groups[4], 10)
     };
 
-    // Calculate the fabric width and height.
-    const width = claim.left + claim.width;
-    const height = claim.top + claim.height;
-    if (width > fabric.width) {
-        fabric.width = width;
-    }
-    if (height > fabric.height) {
-        fabric.height = height;
-    }
-
-    claims.push(claim);
+    claimFabric(claim);
 }
 
-function processClaims() {
-    console.log(`Fabric size: ${fabric.width}x${fabric.height} inches.`);
-    claims.map(getClaimCoords).forEach(claimFabric);
-    console.log('Claimed pieces:', fabric.claimedPieces);
-}
-
-function getClaimCoords(claim) {
-    let coords = [];
-    for (x = claim.left; x < claim.left + claim.width; x++) {
-        for (y = claim.top; y < claim.top + claim.height; y++) {
-            coords.push({x, y});
+function claimFabric(claim) {
+    // CLAIM EVERY INCH!!!
+    for (let x = claim.left; x < claim.left + claim.width; x++) {
+        for (let y = claim.top; y < claim.top + claim.height; y++) {
+            claimInch(x, y);
         }
     }
-    return coords;
 }
 
-function claimFabric(coord) {
-    const x = coord.x;
-    const y = coord.y;
-
+function claimInch(x, y) {
     if (!fabric.pieces[x]) {
         fabric.pieces[x] = [];
     }
