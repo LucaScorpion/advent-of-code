@@ -3,10 +3,10 @@
 class SleepyGuardFinder
 {
     // Guard id to total minutes asleep.
-    private $guardSleepTimes = [];
+    private $guardMinutesAsleep = [];
 
     // Guard id to an array of clock minutes to amount of times asleep on that minute.
-    private $guardSleepyMinutes = [];
+    private $guardMinuteSleepCount = [];
 
     private $guardAsleepStartDate;
 
@@ -34,26 +34,26 @@ class SleepyGuardFinder
         $id = $action->getGuardId();
 
         // Ensure the array keys exist.
-        if (!array_key_exists($id, $this->guardSleepTimes)) {
-            $this->guardSleepTimes[$id] = 0;
+        if (!array_key_exists($id, $this->guardMinutesAsleep)) {
+            $this->guardMinutesAsleep[$id] = 0;
         }
-        if (!array_key_exists($id, $this->guardSleepyMinutes)) {
-            $this->guardSleepyMinutes[$id] = [];
+        if (!array_key_exists($id, $this->guardMinuteSleepCount)) {
+            $this->guardMinuteSleepCount[$id] = [];
         }
 
         // Calculate the minutes since the asleep start time.
         $sleepMinutes = $this->guardAsleepStartDate->diff($action->getDate())->i;
-        $this->guardSleepTimes[$id] += $sleepMinutes;
+        $this->guardMinutesAsleep[$id] += $sleepMinutes;
 
         // Increment all sleepy minutes counters.
         $startMinute = $this->guardAsleepStartDate->format('i');
         for ($min = $startMinute; $min < $startMinute + $sleepMinutes; $min++) {
             // Initialize the count to 0.
-            if (!array_key_exists($min, $this->guardSleepyMinutes[$id])) {
-                $this->guardSleepyMinutes[$id][$min] = 0;
+            if (!array_key_exists($min, $this->guardMinuteSleepCount[$id])) {
+                $this->guardMinuteSleepCount[$id][$min] = 0;
             }
 
-            $this->guardSleepyMinutes[$id][$min] += 1;
+            $this->guardMinuteSleepCount[$id][$min] += 1;
         }
 
         $this->guardAsleepStartDate = null;
@@ -61,23 +61,40 @@ class SleepyGuardFinder
 
     public function getSleepTimes(): array
     {
-        return $this->guardSleepTimes;
+        return $this->guardMinutesAsleep;
     }
 
     public function getSleepyMinutes(): array
     {
-        return $this->guardSleepyMinutes;
+        return $this->guardMinuteSleepCount;
     }
 
-    public function getSleepiestGuardId(): string
+    public function getMostAsleepGuard(): string
     {
-        arsort($this->guardSleepTimes);
-        return array_keys($this->guardSleepTimes)[0];
+        arsort($this->guardMinutesAsleep);
+        return array_keys($this->guardMinutesAsleep)[0];
     }
 
-    public function getSleepiestMinute(string $guardId): int
+    public function getMostAsleepMinute(string $guardId): int
     {
-        arsort($this->guardSleepyMinutes[$guardId]);
-        return array_keys($this->guardSleepyMinutes[$guardId])[0];
+        arsort($this->guardMinuteSleepCount[$guardId]);
+        return array_keys($this->guardMinuteSleepCount[$guardId])[0];
+    }
+
+    public function getMostSleepiestGuardId(): string
+    {
+        $guard = null;
+        $count = 0;
+
+        foreach ($this->guardMinuteSleepCount as $id => $minutes) {
+            $min = $this->getMostAsleepMinute($id);
+            $newCount = $minutes[$min];
+            if ($newCount > $count) {
+                $guard = $id;
+                $count = $newCount;
+            }
+        }
+
+        return $guard;
     }
 }

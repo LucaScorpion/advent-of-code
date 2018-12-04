@@ -1,0 +1,7 @@
+Strategy 1:
+Sleepiest guard: #3457, slept 504 minutes.
+Guard id * minute = 138280
+
+Strategy 2:
+Sleepiest guard: #1901, slept 19 times on minute 47.
+Guard id * minute = 89347

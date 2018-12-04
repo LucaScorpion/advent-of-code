@@ -25,15 +25,33 @@ foreach ($actions as $action) {
     $sleepyGuardFinder->analyze($action);
 }
 
-// Get the sleepiest guard.
-$sleepiestGuard = $sleepyGuardFinder->getSleepiestGuardId();
-$minutesAsleep = $sleepyGuardFinder->getSleepTimes()[$sleepiestGuard];
-print "Sleepiest guard: #$sleepiestGuard, $minutesAsleep minutes.\n";
+print "Strategy 1:\n";
+strategy1($sleepyGuardFinder);
+print "\n";
+print "Strategy 2:\n";
+strategy2($sleepyGuardFinder);
 
-// Get the sleepiest guard's sleepiest minute.
-$sleepiestMinute = $sleepyGuardFinder->getSleepiestMinute($sleepiestGuard);
-$minuteNum = $sleepyGuardFinder->getSleepyMinutes()[$sleepiestGuard][$sleepiestMinute];
-print "This guard slept $sleepiestMinute times on minute $minuteNum.\n";
+function strategy1(SleepyGuardFinder $sleepyGuardFinder)
+{
+    // Get the sleepiest guard's sleepiest minute.
+    $sleepiestGuard = $sleepyGuardFinder->getMostAsleepGuard();
+    $sleepiestMinute = $sleepyGuardFinder->getMostAsleepMinute($sleepiestGuard);
 
-$result = $sleepiestGuard * $sleepiestMinute;
-print "Guard id * minute = $result\n";
+    $minutesAsleep = $sleepyGuardFinder->getSleepTimes()[$sleepiestGuard];
+    print "Sleepiest guard: #$sleepiestGuard, slept $minutesAsleep minutes.\n";
+
+    $result = $sleepiestGuard * $sleepiestMinute;
+    print "Guard id * minute = $result\n";
+}
+
+function strategy2(SleepyGuardFinder $sleepyGuardFinder)
+{
+    // Get all most sleepiest guard's most asleep minute.
+    $sleepiestGuard = $sleepyGuardFinder->getMostSleepiestGuardId();
+    $sleepiestMinute = $sleepyGuardFinder->getMostAsleepMinute($sleepiestGuard);
+
+    $sleepCount = $sleepyGuardFinder->getSleepyMinutes()[$sleepiestGuard][$sleepiestMinute];
+    print "Sleepiest guard: #$sleepiestGuard, slept $sleepCount times on minute $sleepiestMinute.\n";
+    $result = $sleepiestGuard * $sleepiestMinute;
+    print "Guard id * minute = $result\n";
+}
