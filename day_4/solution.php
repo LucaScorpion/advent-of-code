@@ -22,12 +22,18 @@ foreach ($actions as $action) {
         $action->setGuardId($currentGuard);
     }
 
-    echo $action->toString();
-
-    $sleepyGuardFinder->handleAction($action);
+    $sleepyGuardFinder->analyze($action);
 }
 
 // Get the sleepiest guard.
 $sleepiestGuard = $sleepyGuardFinder->getSleepiestGuardId();
-$minutes = $sleepyGuardFinder->getSleepTimes()[$sleepiestGuard];
-print "Sleepiest guard: #$sleepiestGuard, $minutes minutes.\n";
+$minutesAsleep = $sleepyGuardFinder->getSleepTimes()[$sleepiestGuard];
+print "Sleepiest guard: #$sleepiestGuard, $minutesAsleep minutes.\n";
+
+// Get the sleepiest guard's sleepiest minute.
+$sleepiestMinute = $sleepyGuardFinder->getSleepiestMinute($sleepiestGuard);
+$minuteNum = $sleepyGuardFinder->getSleepyMinutes()[$sleepiestGuard][$sleepiestMinute];
+print "This guard slept $sleepiestMinute times on minute $minuteNum.\n";
+
+$result = $sleepiestGuard * $sleepiestMinute;
+print "Guard id * minute = $result\n";
