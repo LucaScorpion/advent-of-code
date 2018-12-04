@@ -57,6 +57,26 @@ class Action
         $this->guardId = $guardId;
     }
 
+    public function getAction(): string
+    {
+        return $this->action;
+    }
+
+    public function fallsAsleep(): bool
+    {
+        return $this->action === 'falls asleep';
+    }
+
+    public function wakesUp(): bool
+    {
+        return $this->action === 'wakes up';
+    }
+
+    public function beginsShift(): bool
+    {
+        return $this->action === 'begins shift';
+    }
+
     public function toString(): string
     {
         return "{$this->date->format(self::DATE_FORMAT)} #{$this->guardId} {$this->action}\n";
