@@ -2,7 +2,10 @@
 set -euo pipefail
 
 dayDir="./day_$1"
-runScript="$dayDir/run.sh"
 inputFile="$dayDir/input.txt"
 
-"$runScript" < "$inputFile"
+# Find and execute a solution script.
+for solution in "$dayDir/solution."*
+do
+    "$solution" < "$inputFile"
+done
