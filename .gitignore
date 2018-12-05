@@ -4,3 +4,6 @@
 
 # Java
 out/
+
+# Visual Studio Code
+.vscode/
