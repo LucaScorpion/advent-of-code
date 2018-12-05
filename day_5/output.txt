@@ -1,0 +1,3 @@
+Original polymer length: 50000
+Polymer length after reactions: 9822
+Shortest polymer length after unit removal: 5726

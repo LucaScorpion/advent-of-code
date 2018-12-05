@@ -28,3 +28,24 @@ end
 
 local reactedPolymer = react(originalPolymer)
 print("Polymer length after reactions: " .. reactedPolymer:len())
+
+-- Remove all instances of a unit from a polymer.
+function removeUnit(original, unit)
+    return original:gsub("[" .. unit:lower() .. unit:upper() .. "]", "")
+end
+
+local shortestPolymerLength = reactedPolymer:len()
+
+-- ASCII a to z.
+for i = 97, 122 do
+    -- Remove the unit and react the resulting polymer.
+    local char = string.char(i)
+    local p = removeUnit(originalPolymer, char)
+    local pLen = react(p):len()
+
+    if pLen < shortestPolymerLength then
+        shortestPolymerLength = pLen
+    end
+end
+
+print("Shortest polymer length after unit removal: " .. shortestPolymerLength)
