@@ -10,6 +10,7 @@ const coordRegex = /^(\d+), (\d+)$/;
 
 let bounds = {};
 let points = [];
+let safePoints = 0;
 
 process.stdin.on('end', getResult);
 reader.on('line', processLine);
@@ -46,6 +47,8 @@ function getResult() {
             let minDist = null;
             let closestI = null;
 
+            let totalDist = 0;
+
             // ...calculate the distance to each point.
             for (let i = 0; i < points.length; i++) {
                 let p = points[i];
@@ -58,6 +61,8 @@ function getResult() {
                 } else if (d === minDist) {
                     closestI = null;
                 }
+
+                totalDist += d;
             }
 
             if (closestI !== null) {
@@ -68,12 +73,20 @@ function getResult() {
 
                 points[closestI].size++;
             }
+
+            if (totalDist < 10000) {
+                safePoints++;
+            }
         }
     }
 
+    // Get the point with the largest area.
     let sizes = points.filter(p => !p.infinite).map(p => p.size);
     let maxSize = Math.max(...sizes);
     console.log('Largest area:', maxSize);
+
+    // Get the amount of safe points.
+    console.log('Safe points:', safePoints);
 }
 
 function manhattanDistance(from, to) {
