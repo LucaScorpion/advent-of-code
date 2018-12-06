@@ -9,7 +9,7 @@ const reader = readline.createInterface({
 const coordRegex = /^(\d+), (\d+)$/;
 
 let bounds = {};
-let coords = [];
+let points = [];
 
 process.stdin.on('end', getResult);
 reader.on('line', processLine);
@@ -18,9 +18,11 @@ function processLine(line) {
     let groups = coordRegex.exec(line);
     let coord = {
         x: parseInt(groups[1], 10),
-        y: parseInt(groups[2], 10)
+        y: parseInt(groups[2], 10),
+        infinite: false,
+        size: 0
     };
-    coords.push(coord);
+    points.push(coord);
 
     // Calculate the bounds.
     if (!('left' in bounds) || coord.x < bounds.left) {
@@ -38,5 +40,44 @@ function processLine(line) {
 }
 
 function getResult() {
-    console.log(bounds);
+    // For each coordinate in the bounds...
+    for (let x = bounds.left; x <= bounds.right; x++) {
+        for (let y = bounds.top; y <= bounds.bottom; y++) {
+            let minDist = null;
+            let closestI = null;
+
+            // ...calculate the distance to each point.
+            for (let i = 0; i < points.length; i++) {
+                let p = points[i];
+                let d = manhattanDistance({x, y}, p);
+
+                // Check the shortest distance, check for a tie.
+                if (minDist === null || d < minDist) {
+                    minDist = d;
+                    closestI = i;
+                } else if (d === minDist) {
+                    closestI = null;
+                }
+            }
+
+            if (closestI !== null) {
+                // Check if the point is on the border.
+                if (x === bounds.left || x === bounds.right || y === bounds.top || y === bounds.bottom) {
+                    points[closestI].infinite = true;
+                }
+
+                points[closestI].size++;
+            }
+        }
+    }
+
+    let sizes = points.filter(p => !p.infinite).map(p => p.size);
+    let maxSize = Math.max(...sizes);
+    console.log('Largest area:', maxSize);
+}
+
+function manhattanDistance(from, to) {
+    let dX = Math.abs(to.x - from.x);
+    let dY = Math.abs(to.y - from.y);
+    return dX + dY;
 }
