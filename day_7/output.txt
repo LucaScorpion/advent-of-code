@@ -1,0 +1,9 @@
+Solving with 1 worker(s).
+Instruction order:
+OKBNLPHCSVWAIRDGUZEFMXYTJQ
+Time: 1911 seconds.
+
+Solving with 5 worker(s).
+Instruction order:
+OPVHKSCBNWLAIRUDGZEMFXYTJQ
+Time: 982 seconds.
