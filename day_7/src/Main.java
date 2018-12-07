@@ -25,6 +25,8 @@ public class Main {
         }
 
         new Resolver(1, dependencies).solve();
+        System.out.println();
+        new Resolver(5, dependencies).solve();
     }
 
     private void parseLine(String line) {
