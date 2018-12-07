@@ -1,0 +1,2 @@
+Largest area: 4166
+Safe points: 42250
