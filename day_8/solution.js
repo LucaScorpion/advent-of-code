@@ -20,18 +20,19 @@ reader.on('line', line => {
 
 function getResult() {
     console.log('Sum of all metadata:', metadataSum);
+    console.log('Root node value:', getNodeValue(root));
 }
 
 function parseNode() {
     let node = {
-        childCound: numbers[index++],
+        childCount: numbers[index++],
         metadataCount: numbers[index++],
         children: [],
         metadata: []
     };
 
     // Parse all child nodes and metadata.
-    for (let c = 0; c < node.childCound; c++) {
+    for (let c = 0; c < node.childCount; c++) {
         node.children.push(parseNode());
     }
     for (let m = 0; m < node.metadataCount; m++) {
@@ -41,4 +42,20 @@ function parseNode() {
     }
 
     return node;
+}
+
+function getNodeValue(node) {
+    if (node.childCount === 0) {
+        // Return the sum of the metadata.
+        return node.metadata.reduce((a, b) => a + b, 0);
+    }
+
+    let val = 0;
+    node.metadata.forEach(m => {
+        if (m > 0 && m <= node.childCount) {
+            val += getNodeValue(node.children[m - 1]);
+        }
+    });
+
+    return val;
 }

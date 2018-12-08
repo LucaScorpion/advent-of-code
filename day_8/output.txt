@@ -1,0 +1,2 @@
+Sum of all metadata: 49426
+Root node value: 40688
