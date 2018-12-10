@@ -1,30 +1,24 @@
 #!/usr/bin/env node
 
-Array.prototype.insert = function(index, item) {
-    this.splice(index, 0, item);
-};
-
-Array.prototype.removeAt = function(index) {
-    this.splice(index, 1);
-};
-
 const readline = require('readline');
+const Circle = require('./circle');
 
 const reader = readline.createInterface({
     input: process.stdin
 });
 
 const regex = /^(\d+) players; last marble is worth (\d+) points$/;
-
 let playerCount;
-let lastPoints;
 
+let lastPoints;
 let points = [];
+
 let currentPlayer = -1;
 
 let marble = 0;
-let marbles = [0];
-let currentMarbleI = 0;
+let circle = new Circle(0);
+
+let currentNode = circle.first;
 
 // There is only 1 line.
 reader.on('line', line => {
@@ -32,6 +26,7 @@ reader.on('line', line => {
     playerCount = groups[1];
     lastPoints = groups[2];
 
+    // Initialize the points to 0.
     for (let i = 0; i < playerCount; i++) {
         points[i] = 0;
     }
@@ -44,7 +39,7 @@ reader.on('line', line => {
 });
 
 function step() {
-    // Next player.
+    // Next player and marble.
     currentPlayer++;
     currentPlayer %= playerCount;
     marble++;
@@ -52,22 +47,15 @@ function step() {
     if (marble % 23 === 0) {
         points[currentPlayer] += marble;
 
-        // Wrap around.
-        currentMarbleI -= 7;
-        while (currentMarbleI < 0) {
-            currentMarbleI += marbles.length;
+        let toRemove = currentNode;
+        for (let i = 0; i < 7; i++) {
+            toRemove = toRemove.prev;
         }
-
-        points[currentPlayer] += marbles[currentMarbleI];
-        marbles.removeAt(currentMarbleI);
+        points[currentPlayer] += toRemove.value;
+        currentNode = toRemove.next;
+        circle.destroy(toRemove);
     } else {
         // Insert the marble.
-        currentMarbleI = newMarbleIndex();
-        marbles.insert(currentMarbleI, marble);
+        currentNode = circle.insertAfter(currentNode.next, marble);
     }
-}
-
-function newMarbleIndex() {
-    let newI = (currentMarbleI + 2) % marbles.length;
-    return newI === 0 ? marbles.length : newI;
 }
