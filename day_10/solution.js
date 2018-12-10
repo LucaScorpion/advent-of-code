@@ -10,6 +10,7 @@ const regex = /^position=< ?(-?\d+), *(-?\d+)> velocity=< ?(-?\d+), *(-?\d+)>$/;
 
 let items = [];
 let bounds = {};
+let seconds = 0;
 
 process.stdin.on('end', getResult);
 reader.on('line', processLine);
@@ -44,12 +45,15 @@ function getResult() {
         } else if (surface > minSurface) {
             step(-1);
             output();
+            console.log(`\nMessage took ${seconds} seconds to appear.`);
             return;
         }
     }
 }
 
 function step(amount = 1) {
+    seconds += amount;
+
     items.forEach(item => {
         item.pos.x += item.vel.x * amount;
         item.pos.y += item.vel.y * amount;
