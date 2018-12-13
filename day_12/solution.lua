@@ -56,22 +56,26 @@ function nextPotState(index)
     return "."
 end
 
-print("G = generation, O = offset")
-print("G=0, O=0: " .. state)
+-- Calculate the sum of all numbers of the pots that contain plants (#).
+function getSum()
+    local sum = 0
+
+    for i = 1, #state do
+        local pot = state:sub(i, i)
+
+        -- Check for a plant.
+        if pot == "#" then
+            sum = sum + (i - 1) + offset -- Add the offset, account for i starting at 1.
+        end
+    end
+
+    return sum
+end
 
 for gen = 1, 20 do
     nextState()
-    print("G=" .. gen .. ", O=" .. offset .. ": " .. state)
-end
 
--- Calculate the sum of all numbers of the pots that contain plants (#).
-local sum = 0
-for i = 1, #state do
-    local pot = state:sub(i, i)
-
-    -- Check for a plant.
-    if pot == "#" then
-        sum = sum + (i - 1) + offset -- Add the offset, account for i starting at 1.
+    if gen == 20 then
+        print("Sum of plant-containing pot numbers (20 generations): " .. getSum())
     end
 end
-print("Sum of plant-containing pot numbers: " .. sum)
