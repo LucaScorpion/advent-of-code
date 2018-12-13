@@ -1,0 +1,4 @@
+Sum of plant-containing pot numbers (20 generations): 4818
+Found a pattern of length 1 after 151 generations.
+Repeated the pattern 49999999849.0 times.
+Sum of plant-containing pot numbers (50000000000 generations): 5100000001377.0

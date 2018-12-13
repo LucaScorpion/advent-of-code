@@ -3,6 +3,7 @@
 local state = io.read("*line"):sub(16)
 local offset = 0
 local spreads = {}
+local gen = 0
 
 io.read("*line") -- Get rid of the empty line.
 -- Read all the spread lines into the spreads table.
@@ -57,7 +58,7 @@ function nextPotState(index)
 end
 
 -- Calculate the sum of all numbers of the pots that contain plants (#).
-function getSum()
+function printSum()
     local sum = 0
 
     for i = 1, #state do
@@ -69,13 +70,54 @@ function getSum()
         end
     end
 
-    return sum
+    print("Sum of plant-containing pot numbers (" .. gen .. " generations): " .. sum)
 end
 
-for gen = 1, 20 do
-    nextState()
+-- Pattern to {offset, gen}.
+local patterns = {
+    state = {
+        ["gen"] = 0,
+        ["offset"] = 0
+    }
+}
 
+-- Try to find a pattern.
+local foundPattern = nil
+while foundPattern == nil do
+    nextState()
+    gen = gen + 1
+
+    -- For part 1.
     if gen == 20 then
-        print("Sum of plant-containing pot numbers (20 generations): " .. getSum())
+        printSum()
+    end
+
+    foundPattern = patterns[state]
+    if foundPattern == nil then
+        patterns[state] = {
+            ["gen"] = gen,
+            ["offset"] = offset
+        }
     end
 end
+
+-- Get the pattern info.
+local patternLength = gen - foundPattern["gen"]
+local patternOffset = offset - foundPattern["offset"]
+print("Found a pattern of length " .. patternLength .. " after " .. gen .. " generations.")
+
+-- Skip ahead a few generations.
+local targetGen = 50000000000
+local left = (targetGen - gen) % patternLength
+local newGen =  targetGen - left
+local repeats = (newGen - gen) / patternLength
+gen = newGen
+offset = offset + repeats * patternOffset
+print("Repeated the pattern " .. repeats .. " times.")
+
+-- Finish what's left.
+while gen < targetGen do
+    nextState()
+    gen = gen + 1
+end
+printSum()
