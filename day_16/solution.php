@@ -14,12 +14,11 @@ $operations = new Operations();
 // Load all cases.
 while ($before = fgets(STDIN)) {
     $op = substr(fgets(STDIN), 0, -1); // Op.
-    $after = fgets(STDIN); // After.
-
     // Check if we are at the example program.
     if ($op === '') {
         break;
     }
+    $after = fgets(STDIN); // After.
 
     fgets(STDIN); // Blank line.
 
