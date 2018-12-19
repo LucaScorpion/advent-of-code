@@ -3,9 +3,11 @@
 
 require_once 'Operations.php';
 require_once 'TestCase.php';
+require_once 'Instruction.php';
 
 $ambiguousOpCount = 0;
 $cases = [];
+$program = [];
 
 $operations = new Operations();
 
@@ -13,11 +15,22 @@ $operations = new Operations();
 while ($before = fgets(STDIN)) {
     $op = substr(fgets(STDIN), 0, -1); // Op.
     $after = fgets(STDIN); // After.
+
+    // Check if we are at the example program.
+    if ($op === '') {
+        break;
+    }
+
     fgets(STDIN); // Blank line.
 
     $cases[] = new TestCase($before, $op, $after);
 }
 print 'Loaded ' . count($cases) . " cases.\n";
+
+// Load the test program.
+while ($line = fgets(STDIN)) {
+    $program[] = new Instruction($line);
+}
 
 $options = [];
 
@@ -27,7 +40,7 @@ foreach ($cases as $case) {
 
     foreach (OPS as $op) {
         // Execute the operation.
-        $resultReg = $operations->$op($case->regBefore, $case->a, $case->b, $case->c);
+        $resultReg = $operations->execute($op, $case->regBefore, $case->op->a, $case->op->b, $case->op->c);
 
         // Check if the register after matches.
         if ($resultReg === $case->regAfter) {
@@ -39,10 +52,10 @@ foreach ($cases as $case) {
         $ambiguousOpCount++;
     }
 
-    if (array_key_exists($case->code, $options)) {
-        $options[$case->code] = array_intersect($options[$case->code], $validOps);
+    if (array_key_exists($case->op->code, $options)) {
+        $options[$case->op->code] = array_intersect($options[$case->op->code], $validOps);
     } else {
-        $options[$case->code] = $validOps;
+        $options[$case->op->code] = $validOps;
     }
 }
 
@@ -78,14 +91,15 @@ foreach ($opCodes as $code => $name) {
     print "$code: $name\n";
 }
 
-/* Helper operations. */
-
-function store($regs, $target, $val)
-{
-    if ($target >= count($regs) || $val === null) {
-        return false;
-    }
-
-    $regs[$target] = $val;
-    return $regs;
+// Run the test program.
+$testRegister = [0, 0, 0, 0];
+foreach ($program as $instruction) {
+    $testRegister = $operations->execute(
+        $opCodes[$instruction->code],
+        $testRegister,
+        $instruction->a,
+        $instruction->b,
+        $instruction->c
+    );
 }
+print 'Test program registers: [ ' . join(', ', $testRegister) . " ]\n";

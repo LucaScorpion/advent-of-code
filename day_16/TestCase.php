@@ -1,26 +1,18 @@
 <?php
 
+require_once 'Instruction.php';
+
 class TestCase
 {
     public $regBefore;
+    public $op;
     public $regAfter;
-
-    public $code;
-    public $a;
-    public $b;
-    public $c;
 
     public function __construct($regBefore, $op, $regAfter)
     {
         $this->regBefore = $this->parseReg($regBefore);
+        $this->op = new Instruction($op);
         $this->regAfter = $this->parseReg($regAfter);
-
-        // Parse the operation.
-        $opParts = explode(' ', $op);
-        $this->code = $opParts[0];
-        $this->a = (int)$opParts[1];
-        $this->b = (int)$opParts[2];
-        $this->c = (int)$opParts[3];
     }
 
     private function parseReg($regStr)

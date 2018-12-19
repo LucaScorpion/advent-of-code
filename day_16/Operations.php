@@ -15,17 +15,8 @@ class Operations
     private $binOps = ['add', 'mul', 'ban', 'bor'];
     private $testOps = ['gt', 'eq'];
 
-    public function __call($name, $arguments)
+    public function execute(string $name, array $reg, int $a, int $b, int $c): array
     {
-        // Current register.
-        $reg = $arguments[0];
-        // Input 1.
-        $a = $arguments[1];
-        // Input 2.
-        $b = $arguments[2];
-        // Output register.
-        $c = $arguments[3];
-
         $opName = substr($name, 0, 3);
         // i or r.
         $opType = substr($name, 3, 1);
