@@ -43,7 +43,6 @@ function step() {
         newState[y] = [];
 
         for (let x = 0; x < state[y].length; x++) {
-            let adj = getAdjacent(x, y);
             let type = state[y][x];
 
             switch (type) {
