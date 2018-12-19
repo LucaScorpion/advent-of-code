@@ -19,9 +19,12 @@ while ($before = fgets(STDIN)) {
 }
 print 'Loaded ' . count($cases) . " cases.\n";
 
+$opCodes = [];
+
 // Test all cases.
 foreach ($cases as $case) {
     $validOps = 0;
+    $opName = null;
 
     foreach (OPS as $op) {
         // Execute the operation.
@@ -30,15 +33,25 @@ foreach ($cases as $case) {
         // Check if the register after matches.
         if ($resultReg === $case->regAfter) {
             $validOps++;
+            $opName = $op;
         }
     }
 
     if ($validOps >= 3) {
         $ambiguousOpCount++;
     }
+
+    if ($validOps === 1) {
+        $opCodes[$case->code] = $opName;
+    }
 }
 
-print "Found {$ambiguousOpCount} ambiguous operations.\n";
+print "Found $ambiguousOpCount ambiguous (>2) operations.\n";
+
+print "Resolved operations:\n";
+foreach ($opCodes as $code => $name) {
+    print "$code: $name\n";
+}
 
 /* Helper operations. */
 

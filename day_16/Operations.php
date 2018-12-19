@@ -68,7 +68,7 @@ class Operations
 
             $reg[$c] = $aVal;
         } else {
-            throw new Error("Invalid operation: {$name}");
+            throw new Error("Invalid operation: $name");
         }
 
         return $reg;
