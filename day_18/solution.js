@@ -10,16 +10,67 @@ const OPEN = '.';
 const TREES = '|';
 const LUMBERYARD = '#';
 
+const TARGET_MINS = 9993;
+
 let state = [];
+/**
+ *
+ * @type {{number: {minute: number, state: Array}}}
+ */
+let scores = {};
 
 process.stdin.on('end', getResult);
 reader.on('line', line => state.push(line.split('')));
 
 function getResult() {
-    for (let i = 1; i <= 10; i++) {
+    scores[calculateScore()] = {minute: 0, state};
+
+    let similarState = null;
+
+    let minute = 0;
+    while (minute < TARGET_MINS) {
         step();
+        minute++;
+        let score = calculateScore();
+
+        // Check if the score already exists.
+        // If so, assume it is the same state so we can fast-forward.
+        if (scores[score]) {
+            similarState = scores[score];
+            break;
+        } else {
+            scores[score] = {minute, state};
+        }
+
+        // Part 1.
+        if (minute === 10) {
+            console.log(`After 10 minutes: ${calculateScore()}`);
+        }
     }
 
+    // Fast-forward.
+    if (similarState) {
+        let oldMinute = similarState.minute;
+        let length = minute - oldMinute;
+        let minutesLeft = (TARGET_MINS - minute) % length;
+        console.log(`Found pattern with length ${length} on minute ${minute}.`);
+
+        // Fast-forward.
+        minute = TARGET_MINS - minutesLeft;
+        state = similarState.state;
+    }
+
+    // Finish it.
+    console.log(`Finishing the last ${TARGET_MINS - minute} runs.`);
+    while (minute < TARGET_MINS) {
+        step();
+        minute++;
+    }
+
+    console.log(`After ${minute} minutes: ${calculateScore()}`);
+}
+
+function calculateScore() {
     // Count the trees and lumberyards.
     let trees = 0;
     let lumberyards = 0;
@@ -33,7 +84,7 @@ function getResult() {
         });
     });
 
-    console.log(`Trees * lumberyards = ${trees * lumberyards}`);
+    return trees * lumberyards;
 }
 
 function step() {
