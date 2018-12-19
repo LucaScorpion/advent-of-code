@@ -50,14 +50,30 @@ print "Found $ambiguousOpCount ambiguous (>2) operations.\n";
 
 // Resolve all opcodes.
 $opCodes = [];
-foreach ($options as $code => $ops) {
-    $vals = array_values($ops);
-    if (count($vals) === 1) {
-        $opCodes[$code] = $vals[0];
+while (count(array_keys($options)) > 0) {
+    foreach ($options as $code => $ops) {
+        $vals = array_values($ops);
+
+        // Check if there is a single option.
+        if (count($vals) === 1) {
+            $name = $vals[0];
+            $opCodes[$code] = $name;
+
+            // Remove the op from the options.
+            unset($options[$code]);
+
+            // Remove the op from all other options.
+            foreach ($options as $c => $o) {
+                if (($key = array_search($name, $o)) !== false) {
+                    unset($options[$c][$key]);
+                }
+            }
+        }
     }
 }
 
 print "Resolved operations:\n";
+ksort($opCodes);
 foreach ($opCodes as $code => $name) {
     print "$code: $name\n";
 }
