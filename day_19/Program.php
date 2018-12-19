@@ -8,11 +8,12 @@ class Program
     private $instructions;
 
     private $ops;
-    private $registers = [0, 0, 0, 0, 0, 0];
+    private $registers;
     private $pointer = 0;
 
-    public function __construct(int $ipRegister, array $instructions)
+    public function __construct(array $initReg, int $ipRegister, array $instructions)
     {
+        $this->registers = $initReg;
         $this->ipRegister = $ipRegister;
         $this->instructions = $instructions;
         $this->ops = new Operations();
