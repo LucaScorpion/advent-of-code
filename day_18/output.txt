@@ -1,0 +1,3 @@
+After 10 minutes: 549936
+Found pattern with length 28 on minute 479.
+After 1000000000 minutes: 206304

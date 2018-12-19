@@ -10,12 +10,12 @@ const OPEN = '.';
 const TREES = '|';
 const LUMBERYARD = '#';
 
-const TARGET_MINS = 9993;
+const TARGET_MINS = 1000000000;
 
 let state = [];
 /**
  *
- * @type {{number: {minute: number, state: Array}}}
+ * @type {{number: [{minute: number, state: Array}]}}
  */
 let scores = {};
 
@@ -25,22 +25,20 @@ reader.on('line', line => state.push(line.split('')));
 function getResult() {
     scores[calculateScore()] = {minute: 0, state};
 
-    let similarState = null;
-
+    let prevSameState = null;
     let minute = 0;
-    while (minute < TARGET_MINS) {
+    while (minute < TARGET_MINS && prevSameState === null) {
         step();
         minute++;
         let score = calculateScore();
 
-        // Check if the score already exists.
-        // If so, assume it is the same state so we can fast-forward.
-        if (scores[score]) {
-            similarState = scores[score];
-            break;
-        } else {
-            scores[score] = {minute, state};
+        prevSameState = findState(score);
+
+        // Store the current state.
+        if (scores[score] == null) {
+            scores[score] = [];
         }
+        scores[score].push({minute, state});
 
         // Part 1.
         if (minute === 10) {
@@ -49,25 +47,51 @@ function getResult() {
     }
 
     // Fast-forward.
-    if (similarState) {
-        let oldMinute = similarState.minute;
+    if (prevSameState) {
+        let oldMinute = prevSameState.minute;
         let length = minute - oldMinute;
         let minutesLeft = (TARGET_MINS - minute) % length;
         console.log(`Found pattern with length ${length} on minute ${minute}.`);
 
         // Fast-forward.
         minute = TARGET_MINS - minutesLeft;
-        state = similarState.state;
+        state = prevSameState.state;
     }
 
-    // Finish it.
-    console.log(`Finishing the last ${TARGET_MINS - minute} runs.`);
+    // Finish it.;
     while (minute < TARGET_MINS) {
         step();
         minute++;
     }
 
     console.log(`After ${minute} minutes: ${calculateScore()}`);
+}
+
+function findState(score) {
+    let similar = scores[score];
+    if (!similar) {
+        return null;
+    }
+
+    for (let i = 0; i < similar.length; i++) {
+        if (statesEqual(state, similar[i].state)) {
+            return similar[i];
+        }
+    }
+
+    return null;
+}
+
+function statesEqual(s1, s2) {
+    for (let y = 0; y < s1.length; y++) {
+        for (let x = 0; x < s1[y].length; x++) {
+            if (s1[y][x] !== s2[y][x]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 function calculateScore() {
