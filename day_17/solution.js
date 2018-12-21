@@ -7,7 +7,8 @@ const reader = readline.createInterface({
 });
 
 const SAND = '.';
-const WATER = '~';
+const WATER_FLOW = '|';
+const WATER_STALE = '~';
 const CLAY = '#';
 const SOURCE = '+';
 
@@ -42,8 +43,12 @@ function getResult() {
 
     grid.forEach(row => console.log(row.join('')));
 
+    countWater();
+}
+
+function countWater() {
     // Count the blocks of water.
-    let waterCount = grid.reduce((acc, row) => acc + row.filter(block => block === WATER).length, 0);
+    let waterCount = grid.reduce((acc, row) => acc + row.filter(block => block === WATER_FLOW || block === WATER_STALE).length, 0);
     console.log(`Blocks of water: ${waterCount}`);
 }
 
@@ -57,32 +62,49 @@ function waterDown(x, y) {
     // Flow down.
     while (waterCanMoveTo(x, y + 1)) {
         y++;
-        grid[y][x] = WATER;
+        grid[y][x] = WATER_FLOW;
     }
 
-    if (y < bounds.y) {
-        // Fill, moving up the stream.
-        let fillLeft;
-        let fillRight;
+    while (y >= sourceY && isFloor(x, y + 1)) {
+        fillHor2(x, y);
+        y--;
+    }
+}
 
-        do {
-            fillLeft = fillHorizontal(x, y, -1);
-            fillRight = fillHorizontal(x, y, 1);
+function fillHor2(x, y) {
+    // Find the left and right wall.
+    let leftX = x;
+    let rightX = x;
+    while (waterCanMoveTo(leftX - 1, y) && isFloor(leftX, y + 1)) {
+        leftX--;
+        grid[y][leftX] = WATER_FLOW;
+    }
+    while (waterCanMoveTo(rightX + 1, y) && isFloor(rightX, y + 1)) {
+        rightX++;
+        grid[y][rightX] = WATER_FLOW;
+    }
 
-            y--;
-
-            if (y < sourceY) {
-                break;
-            }
-        } while (fillLeft && fillRight);
+    // Check if the water should be stale.
+    if (isType(leftX - 1, y, CLAY) && isFloor(leftX, y + 1) && isType(rightX + 1, y, CLAY) && isFloor(rightX, y + 1)) {
+        for (let xx = leftX; xx <= rightX; xx++) {
+            grid[y][xx] = WATER_STALE;
+        }
+    } else {
+        // Check if the water should flow down.
+        if (waterCanMoveTo(leftX, y + 1)) {
+            waterDown(leftX, y);
+        }
+        if (waterCanMoveTo(rightX, y + 1)) {
+            waterDown(rightX, y);
+        }
     }
 }
 
 function fillHorizontal(x, y, dX) {
     // Check for a floor.
-    while ((isType(x, y + 1, CLAY) || isType(x, y + 1, WATER)) && waterCanMoveTo(x + dX, y)) {
+    while (isFloor(x, y + 1) && waterCanMoveTo(x + dX, y)) {
         x += dX;
-        grid[y][x] = WATER;
+        grid[y][x] = WATER_FLOW;
     }
 
     // Pour down.
@@ -105,6 +127,10 @@ function waterCanMoveTo(x, y) {
 
 function isType(x, y, type) {
     return grid[y] && grid[y][x] === type;
+}
+
+function isFloor(x, y) {
+    return isType(x, y, CLAY) || isType(x, y, WATER_STALE);
 }
 
 function processLine(line) {
