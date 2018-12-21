@@ -52,9 +52,46 @@ function simulateWater(startX, startY) {
 }
 
 function waterDown(x, y) {
+    let sourceY = y;
+
+    // Flow down.
     while (waterCanMoveTo(x, y + 1)) {
         y++;
         grid[y][x] = WATER;
+    }
+
+    if (y < bounds.y) {
+        // Fill, moving up the stream.
+        let fillLeft;
+        let fillRight;
+
+        do {
+            fillLeft = fillHorizontal(x, y, -1);
+            fillRight = fillHorizontal(x, y, 1);
+
+            y--;
+
+            if (y < sourceY) {
+                break;
+            }
+        } while (fillLeft && fillRight);
+    }
+}
+
+function fillHorizontal(x, y, dX) {
+    // Check for a floor.
+    while ((isType(x, y + 1, CLAY) || isType(x, y + 1, WATER)) && waterCanMoveTo(x + dX, y)) {
+        x += dX;
+        grid[y][x] = WATER;
+    }
+
+    // Pour down.
+    if (waterCanMoveTo(x, y + 1)) {
+        // Pour down.
+        waterDown(x, y);
+        return false;
+    } else {
+        return true;
     }
 }
 
@@ -63,7 +100,11 @@ function waterCanMoveTo(x, y) {
         return false;
     }
 
-    return grid[y][x] === SAND;
+    return isType(x, y, SAND);
+}
+
+function isType(x, y, type) {
+    return grid[y] && grid[y][x] === type;
 }
 
 function processLine(line) {
