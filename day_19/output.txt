@@ -1,0 +1,5 @@
+Run 1:
+Program halted, pointer is at: 257.
+Registers: [ 2160, 256, 921, 920, 1, 921 ]
+Run 2:
+Oh look, it's a halting problem. The answer is: 25945920

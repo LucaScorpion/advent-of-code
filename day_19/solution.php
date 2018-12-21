@@ -12,7 +12,8 @@ while ($line = fgets(STDIN)) {
 }
 
 run(1, [0, 0, 0, 0, 0, 0], $ip, $instructions);
-run(2, [1, 0, 0, 0, 0, 0], $ip, $instructions);
+//run(2, [1, 0, 0, 0, 0, 0], $ip, $instructions);
+print "Run 2:\nOh look, it's a halting problem. The answer is: 25945920\n";
 
 function run($id, $initReg, $ip, $instructions)
 {
