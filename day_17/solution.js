@@ -12,9 +12,15 @@ const WATER_STALE = '~';
 const CLAY = '#';
 const SOURCE = '+';
 
-let bounds = {
-    x: null,
-    y: null
+let gridBounds = {
+    min: {
+        x: null,
+        y: null
+    },
+    max: {
+        x: null,
+        y: null
+    }
 };
 let grid = [];
 
@@ -23,13 +29,13 @@ reader.on('line', processLine);
 
 function getResult() {
     // Fill the grid.
-    for (let y = 0; y <= bounds.y; y++) {
+    for (let y = 0; y <= gridBounds.max.y; y++) {
         if (!grid[y]) {
             grid[y] = [];
         }
 
         let row = grid[y];
-        for (let x = 0; x <= bounds.x; x++) {
+        for (let x = gridBounds.min.x - 1; x <= gridBounds.max.x + 1; x++) {
             if (!row[x]) {
                 row[x] = SAND;
             }
@@ -37,19 +43,22 @@ function getResult() {
     }
 
     // Place the source.
+    if (!grid[0]) {
+        grid[0] = [];
+    }
     grid[0][500] = SOURCE;
 
     simulateWater(500, 0);
-
-    grid.forEach(row => console.log(row.join('')));
-
     countWater();
 }
 
 function countWater() {
     // Count the blocks of water.
-    let waterCount = grid.reduce((acc, row) => acc + row.filter(block => block === WATER_FLOW || block === WATER_STALE).length, 0);
-    console.error(`Blocks of water: ${waterCount}`);
+    let waterCount = 0;
+    for (let y = gridBounds.min.y; y <= gridBounds.max.y; y++) {
+        waterCount += grid[y].filter(block => block === WATER_FLOW || block === WATER_STALE).length;
+    }
+    console.log(`Blocks of water: ${waterCount}`);
 }
 
 function simulateWater(startX, startY) {
@@ -101,7 +110,7 @@ function fillHorizontal(x, y) {
 }
 
 function waterCanMoveTo(x, y) {
-    if (y < 0 || y > bounds.y) {
+    if (y < 0 || y > gridBounds.max.y) {
         return false;
     }
 
@@ -132,7 +141,7 @@ function horizontalClay(y, minX, maxX) {
         addClay(x, y);
     }
 
-    calcGridBounds(maxX, y);
+    calcGridBounds(minX, maxX, y, y);
 }
 
 function verticalClay(x, minY, maxY) {
@@ -140,7 +149,7 @@ function verticalClay(x, minY, maxY) {
         addClay(x, y);
     }
 
-    calcGridBounds(x, maxY);
+    calcGridBounds(x, x, minY, maxY);
 }
 
 function addClay(x, y) {
@@ -151,11 +160,20 @@ function addClay(x, y) {
     grid[y][x] = CLAY;
 }
 
-function calcGridBounds(x, y) {
-    if (bounds.x === null || x > bounds.x) {
-        bounds.x = x;
+function calcGridBounds(minX, maxX, minY, maxY) {
+    // X
+    if (gridBounds.min.x === null || minX < gridBounds.min.x) {
+        gridBounds.min.x = minX;
     }
-    if (bounds.y === null || y > bounds.y) {
-        bounds.y = y;
+    if (gridBounds.max.x === null || maxX > gridBounds.max.x) {
+        gridBounds.max.x = maxX;
+    }
+
+    // Y
+    if (gridBounds.min.y === null || minY < gridBounds.min.y) {
+        gridBounds.min.y = minY;
+    }
+    if (gridBounds.max.y === null || maxY > gridBounds.max.y) {
+        gridBounds.max.y = maxY;
     }
 }
