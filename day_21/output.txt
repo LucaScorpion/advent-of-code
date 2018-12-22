@@ -1,0 +1,2 @@
+First value for register 3: 3909249
+Value for register 3 which causes longest run: 12333799
