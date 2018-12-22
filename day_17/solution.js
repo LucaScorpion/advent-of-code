@@ -54,11 +54,16 @@ function getResult() {
 
 function countWater() {
     // Count the blocks of water.
-    let waterCount = 0;
+    let flowWaterCount = 0;
+    let staleWaterCount = 0;
+
     for (let y = gridBounds.min.y; y <= gridBounds.max.y; y++) {
-        waterCount += grid[y].filter(block => block === WATER_FLOW || block === WATER_STALE).length;
+        flowWaterCount += grid[y].filter(block => block === WATER_FLOW).length;
+        staleWaterCount += grid[y].filter(block => block === WATER_STALE).length;
     }
-    console.log(`Blocks of water: ${waterCount}`);
+
+    console.log(`Total blocks of water: ${flowWaterCount + staleWaterCount}`);
+    console.log(`Stale blocks of water: ${staleWaterCount}`);
 }
 
 function simulateWater(startX, startY) {
