@@ -37,9 +37,9 @@ function getResult() {
     }
 
     // Place the source.
-    grid[0][10] = SOURCE;
+    grid[0][500] = SOURCE;
 
-    simulateWater(10, 0);
+    simulateWater(500, 0);
 
     grid.forEach(row => console.log(row.join('')));
 
@@ -49,7 +49,7 @@ function getResult() {
 function countWater() {
     // Count the blocks of water.
     let waterCount = grid.reduce((acc, row) => acc + row.filter(block => block === WATER_FLOW || block === WATER_STALE).length, 0);
-    console.log(`Blocks of water: ${waterCount}`);
+    console.error(`Blocks of water: ${waterCount}`);
 }
 
 function simulateWater(startX, startY) {
@@ -65,23 +65,31 @@ function waterDown(x, y) {
         grid[y][x] = WATER_FLOW;
     }
 
-    while (y >= sourceY && isFloor(x, y + 1)) {
-        fillHor2(x, y);
+    while (sourceY < y && isFloor(x, y + 1)) {
+        fillHorizontal(x, y);
         y--;
     }
 }
 
-function fillHor2(x, y) {
+function fillHorizontal(x, y) {
     // Find the left and right wall.
     let leftX = x;
     let rightX = x;
     while (waterCanMoveTo(leftX - 1, y) && isFloor(leftX, y + 1)) {
         leftX--;
         grid[y][leftX] = WATER_FLOW;
+
+        if (waterCanMoveTo(leftX, y + 1)) {
+            waterDown(leftX, y);
+        }
     }
     while (waterCanMoveTo(rightX + 1, y) && isFloor(rightX, y + 1)) {
         rightX++;
         grid[y][rightX] = WATER_FLOW;
+
+        if (waterCanMoveTo(rightX, y + 1)) {
+            waterDown(rightX, y);
+        }
     }
 
     // Check if the water should be stale.
@@ -89,31 +97,6 @@ function fillHor2(x, y) {
         for (let xx = leftX; xx <= rightX; xx++) {
             grid[y][xx] = WATER_STALE;
         }
-    } else {
-        // Check if the water should flow down.
-        if (waterCanMoveTo(leftX, y + 1)) {
-            waterDown(leftX, y);
-        }
-        if (waterCanMoveTo(rightX, y + 1)) {
-            waterDown(rightX, y);
-        }
-    }
-}
-
-function fillHorizontal(x, y, dX) {
-    // Check for a floor.
-    while (isFloor(x, y + 1) && waterCanMoveTo(x + dX, y)) {
-        x += dX;
-        grid[y][x] = WATER_FLOW;
-    }
-
-    // Pour down.
-    if (waterCanMoveTo(x, y + 1)) {
-        // Pour down.
-        waterDown(x, y);
-        return false;
-    } else {
-        return true;
     }
 }
 
