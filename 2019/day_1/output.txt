@@ -1,0 +1,3 @@
+Fuel required for modules: 3262991
+Additional fuel required for fuel: 1628629
+Total fuel required: 4891620
