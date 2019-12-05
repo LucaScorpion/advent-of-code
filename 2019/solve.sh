@@ -7,5 +7,8 @@ inputFile="$dayDir/input.txt"
 # Find and execute a solution script.
 for solution in "$dayDir/solution."*
 do
-    "$solution" < "$inputFile"
+    if [ -x "$solution" ]
+    then
+        "$solution" < "$inputFile"
+    fi
 done
