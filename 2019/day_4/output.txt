@@ -1,1 +1,2 @@
-Found 1665 possible codes
+Found 1665 possible codes with the first criteria
+Found 1131 possible codes with the second criteria
