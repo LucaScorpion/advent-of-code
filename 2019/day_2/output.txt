@@ -1,1 +1,3 @@
 Test run result: 4023471
+Found noun 80 and verb 51
+Result: 8051

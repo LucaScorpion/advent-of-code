@@ -18,12 +18,18 @@ class IntCodeComputer {
     this.memory[2] = verb;
   }
 
-  public compute(): number {
+  public compute(): number | false {
     while (true) {
-      const op = this.memory[this.pointer++];
-      const result = this.operations[op]();
+      const opcode = this.memory[this.pointer++];
+      const op = this.operations[opcode];
+
+      // Check if the operation is valid;
+      if (!op) {
+        return false;
+      }
 
       // Check for halting.
+      const result = op();
       if (result === false) {
         break;
       }
@@ -41,5 +47,18 @@ class IntCodeComputer {
 
 const input = fs.readFileSync(0).toString().trim().split(',').map((s: string) => parseInt(s, 10));
 
-const day1 = new IntCodeComputer(input, 12, 2);
+const day1 = new IntCodeComputer(input.slice(), 12, 2);
 console.log('Test run result:', day1.compute());
+
+const requiredOutput = 19690720;
+outer:
+  for (let noun = 0; noun < 100; noun++) {
+    for (let verb = 0; verb < 100; verb++) {
+      const result = new IntCodeComputer(input.slice(), noun, verb).compute();
+      if (result === requiredOutput) {
+        console.log('Found noun', noun, 'and verb', verb);
+        console.log('Result:', 100 * noun + verb);
+        break outer;
+      }
+    }
+  }
