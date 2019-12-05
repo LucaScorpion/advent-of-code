@@ -5,11 +5,10 @@ type Direction = 'R' | 'L' | 'U' | 'D';
 type Orientation = 'horizontal' | 'vertical';
 
 interface WireSegment {
-  fromX: number;
-  fromY: number;
-  toX: number;
-  toY: number;
+  from: Pos;
+  to: Pos;
   direction: Direction;
+  length: number;
 }
 
 interface Pos {
@@ -20,11 +19,16 @@ interface Pos {
 function parseWireSegments(line: string): WireSegment[] {
   const segments: WireSegment[] = [];
   let lastSegment: WireSegment = {
-    fromX: 0,
-    fromY: 0,
-    toX: 0,
-    toY: 0,
+    from: {
+      x: 0,
+      y: 0,
+    },
+    to: {
+      x: 0,
+      y: 0,
+    },
     direction: 'D',
+    length: 0,
   };
 
   line.split(',').forEach(part => {
@@ -32,13 +36,15 @@ function parseWireSegments(line: string): WireSegment[] {
     const direction = part.substring(0, 1) as Direction;
     const length = parseInt(part.substring(1), 10);
     // Get the new segment info.
-    const [toX, toY] = getTargetCoords(lastSegment.toX, lastSegment.toY, direction, length);
+    const to = getTargetCoords(lastSegment.to, direction, length);
     lastSegment = {
       direction,
-      fromX: lastSegment.toX,
-      fromY: lastSegment.toY,
-      toX,
-      toY,
+      length,
+      to,
+      from: {
+        x: lastSegment.to.x,
+        y: lastSegment.to.y,
+      },
     };
     segments.push(lastSegment);
   });
@@ -49,16 +55,17 @@ function getOrientation(dir: Direction): Orientation {
   return (dir === 'R' || dir === 'L') ? 'horizontal' : 'vertical';
 }
 
-function getTargetCoords(x: number, y: number, dir: Direction, length: number): [number, number] {
+function getTargetCoords(from: Pos, dir: Direction, length: number): Pos {
+  const { x, y } = from;
   switch (dir) {
     case 'R':
-      return [x + length, y];
+      return { x: x + length, y };
     case 'L':
-      return [x - length, y];
+      return { x: x - length, y };
     case 'U':
-      return [x, y + length];
+      return { x, y: y + length };
     case 'D':
-      return [x, y - length];
+      return { x, y: y - length };
   }
 }
 
@@ -81,16 +88,46 @@ function getIntersectionPos(seg1: WireSegment, seg2: WireSegment): Pos | undefin
 
   // Get the possible intersection.
   const possibleIntersect: Pos = {
-    x: vert.fromX,
-    y: hor.fromY,
+    x: vert.from.x,
+    y: hor.from.y,
   };
 
   // Check if the x is a point on the horizontal line, and vice versa.
-  if (isInRange(possibleIntersect.x, hor.fromX, hor.toX) && isInRange(possibleIntersect.y, vert.fromY, vert.toY)) {
+  if (isInRange(possibleIntersect.x, hor.from.x, hor.to.x) && isInRange(possibleIntersect.y, vert.from.y, vert.to.y)) {
     return possibleIntersect;
   }
 
   // Intersection is not on both lines!
+}
+
+function getSegmentDelay(point: Pos, lineFrom: Pos, lineTo: Pos): number | false {
+  // Check if the point is even on the segment.
+  if (!isInRange(point.x, lineFrom.x, lineTo.x) || !isInRange(point.y, lineFrom.y, lineTo.y)) {
+    return false;
+  }
+
+  const diff: Pos = {
+    x: point.x - lineFrom.x,
+    y: point.y - lineFrom.y,
+  };
+  return Math.abs(diff.x) + Math.abs(diff.y);
+}
+
+function getDelay(wire: WireSegment[], intersection: Pos): number {
+  let delay = 0;
+  for (let segment of wire) {
+    // Check if the intersection is on this segment.
+    const segmentDelay = getSegmentDelay(intersection, segment.from, segment.to);
+
+    // If the intersection is not on this segment, add the entire segment length to the delay.
+    if (segmentDelay === false) {
+      delay += segment.length;
+    } else {
+      delay += segmentDelay;
+      break;
+    }
+  }
+  return delay;
 }
 
 const lines = fs.readFileSync(0).toString().trim().split('\n');
@@ -108,4 +145,7 @@ wire1.forEach(seg1 => {
 });
 
 const closesDist = intersections.map(i => Math.abs(i.x) + Math.abs(i.y)).reduce((acc, cur) => (!acc || cur < acc) ? cur : acc, 0);
-console.log('Closest intersection is:', closesDist);
+console.log('Closest intersection:', closesDist);
+
+const leastDelay = intersections.map(i => getDelay(wire1, i) + getDelay(wire2, i)).reduce((acc, cur) => (!acc || cur < acc) ? cur : acc, 0);
+console.log('Least delay:', leastDelay);

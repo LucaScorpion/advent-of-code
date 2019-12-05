@@ -1,1 +1,2 @@
-Closest intersection is: 248
+Closest intersection: 248
+Least delay: 28580
