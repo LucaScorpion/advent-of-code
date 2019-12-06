@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "ts-node solution.ts"
+    "start": "ts-node"
   },
   "devDependencies": {
     "@types/node": "^12.12.14",

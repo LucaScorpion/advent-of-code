@@ -9,5 +9,5 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["solution.ts"]
+  "include": ["**/*.ts"]
 }
