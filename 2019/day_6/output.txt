@@ -1,0 +1,2 @@
+Total number of orbits: 223251
+Orbital transfers required: 430
