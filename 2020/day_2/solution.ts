@@ -24,12 +24,21 @@ const entries: PasswordEntry[] = input.map(line => {
   });
 });
 
-function isValid(entry: PasswordEntry): boolean {
+function isValidPart1(entry: PasswordEntry): boolean {
   const removed = entry.password.split(entry.policyLetter).join('');
   const lengthDiff = entry.password.length - removed.length;
   return lengthDiff >= entry.policyRangeFrom && lengthDiff <= entry.policyRangeTo;
 }
 
-const corrupted = entries.filter(isValid);
+function isValidPart2(entry: PasswordEntry): boolean {
+  const charFrom = entry.password.charAt(entry.policyRangeFrom - 1);
+  const charTo = entry.password.charAt(entry.policyRangeTo - 1);
 
-console.log('Valid entries:', corrupted.length)
+  if (charFrom == entry.policyLetter && charTo == entry.policyLetter) {
+    return false;
+  }
+  return charFrom == entry.policyLetter || charTo == entry.policyLetter;
+}
+
+console.log('Valid entries part 1:', entries.filter(isValidPart1).length);
+console.log('Valid entries part 2:', entries.filter(isValidPart2).length);
