@@ -21,6 +21,12 @@ function calculateVolume(size: number): number {
   return topThirdCount * 2 + midCount;
 }
 
+// Alternative volume calculation, thanks to Mainlypastries :D
+function calculateVolume2(size: number): number {
+  const n = size - 1;
+  return 5 * size * size + 4 * ((n * size) / 2);
+}
+
 for (let size = 1; ;size++) {
   const volume = calculateVolume(size);
   if (volume >= input) {
