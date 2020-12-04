@@ -1,0 +1,2 @@
+Part 1 valid: 182
+Part 2 valid: 109

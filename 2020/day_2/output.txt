@@ -1,0 +1,2 @@
+Valid entries part 1: 546
+Valid entries part 2: 275

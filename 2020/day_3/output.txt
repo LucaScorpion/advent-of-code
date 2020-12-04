@@ -1,0 +1,6 @@
+Slope 1;1, trees: 86
+Slope 3;1, trees: 159
+Slope 5;1, trees: 97
+Slope 7;1, trees: 88
+Slope 1;2, trees: 55
+Trees multiplied: 6419669520

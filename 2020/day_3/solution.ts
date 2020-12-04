@@ -46,7 +46,7 @@ let treesMultiplied = 1;
 
 slopes.forEach(s => {
   const treeCount = countTrees(s);
-  console.log(`Slope ${s.right},${s.down}, trees: ${treeCount}`);
+  console.log(`Slope ${s.right};${s.down}, trees: ${treeCount}`);
   treesMultiplied *= treeCount;
 });
 

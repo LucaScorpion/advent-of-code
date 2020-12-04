@@ -33,9 +33,21 @@ const mandatoryField = [
   // 'cid'
 ];
 
-const validEyeColors = [ 'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth' ];
-
 function isPassportValid(passport: Passport): boolean {
+  let isValid = true;
+  mandatoryField.forEach(field => {
+    const value = passport[field];
+    if (value == undefined) {
+      isValid = false;
+      return;
+    }
+  });
+  return isValid;
+}
+
+const validEyeColors = ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'];
+
+function isPassportValidExtended(passport: Passport): boolean {
   let isValid = true;
   mandatoryField.forEach(field => {
     const value = passport[field];
@@ -76,10 +88,9 @@ function isPassportValid(passport: Passport): boolean {
         isValid = isValid && /^[0-9]{9}$/.test(value);
         break;
     }
-
   });
   return isValid;
 }
 
-const validPassports = passports.filter(isPassportValid).length;
-console.log(validPassports, 'valid passports');
+console.log('Part 1 valid:', passports.filter(isPassportValid).length);
+console.log('Part 2 valid:', passports.filter(isPassportValidExtended).length);
