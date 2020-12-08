@@ -13,7 +13,7 @@ input.forEach((line) => {
   groups[groups.length - 1].push(line);
 });
 
-let yesCounts = 0;
+let anyYesCount = 0;
 groups.forEach((group) => {
   const yesAnswers = new Set<string>();
 
@@ -21,7 +21,23 @@ groups.forEach((group) => {
     member.split('').forEach((q) => yesAnswers.add(q));
   });
 
-  yesCounts += yesAnswers.size;
+  anyYesCount += yesAnswers.size;
 });
 
-console.log('Sum of yes counts:', yesCounts);
+let everyYesCount = 0;
+groups.forEach((group) => {
+  const yesAnswers: Record<string, number> = {};
+
+  group.forEach((member) => {
+    member.split('').forEach((q) => {
+      const currentYesCount = yesAnswers[q] || 0;
+      yesAnswers[q] = currentYesCount + 1;
+    });
+  });
+
+  everyYesCount += Object.entries(yesAnswers)
+    .filter(([, value]) => value === group.length).length;
+});
+
+console.log('Sum of any yes count:', anyYesCount);
+console.log('Sum of every yes count:', everyYesCount);
