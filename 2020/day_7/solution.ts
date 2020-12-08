@@ -56,5 +56,18 @@ function containsShinyGoldBag(outerBag: string): boolean {
   return false;
 }
 
+function countContainedBags(outerBag: string): number {
+  const rule = rules.find(r => r.outerBag === outerBag)!;
+
+  let total = 0;
+  rule.innerBags.forEach((innerBag) => {
+    total += innerBag.amount;
+    total += countContainedBags(innerBag.color) * innerBag.amount;
+  });
+
+  return total;
+}
+
 const containsGold = allColors.filter(containsShinyGoldBag).length;
 console.log('Bags containing shiny gold bags:', containsGold);
+console.log('Bags contained in shiny gold bag:',  countContainedBags('shiny gold'))
