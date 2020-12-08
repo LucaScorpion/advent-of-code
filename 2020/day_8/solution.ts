@@ -22,7 +22,7 @@ class Computer {
     'nop': () => this.pointer++,
   };
 
-  constructor(private readonly instructions: Instruction[]) {
+  constructor(public readonly instructions: Instruction[]) {
   }
 
   public step(): void {
@@ -40,15 +40,38 @@ const parsedInstructions = input.map<Instruction>((line) => {
   };
 });
 
-const executedInstructions = new Set<number>();
-const computer = new Computer(parsedInstructions);
+function findLoop(computer: Computer): boolean {
+  const executedInstructions = new Set<number>();
+  while (computer.pointer < computer.instructions.length) {
+    if (executedInstructions.has(computer.pointer)) {
+      return true;
+    }
 
-while (true) {
-  if (executedInstructions.has(computer.pointer)) {
-    console.log('Pointer:', computer.pointer, 'Accumulator:', computer.accumulator);
-    break;
+    executedInstructions.add(computer.pointer);
+    computer.step();
   }
 
-  executedInstructions.add(computer.pointer);
-  computer.step();
+  return false;
+}
+
+const part1Computer = new Computer(parsedInstructions);
+findLoop(part1Computer);
+console.log('Part 1 accumulator:', part1Computer.accumulator);
+
+for (let i = 0; i < parsedInstructions.length; i++) {
+  const instruction = parsedInstructions[i];
+
+  if (instruction.operation === 'jmp' || instruction.operation === 'nop') {
+    const mutatedInstruction = [...parsedInstructions];
+    mutatedInstruction[i] = {
+      operation: instruction.operation === 'jmp' ? 'nop' : 'jmp',
+      argument: instruction.argument,
+    };
+
+    const mutatedComputer = new Computer(mutatedInstruction);
+    if (!findLoop(mutatedComputer)) {
+      console.log('Part 2 accumulator:', mutatedComputer.accumulator);
+      break;
+    }
+  }
 }
