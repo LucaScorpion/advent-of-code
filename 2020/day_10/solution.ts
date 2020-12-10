@@ -17,3 +17,23 @@ const d1Count = differences.filter((d) => d === 1).length;
 const d3Count = differences.filter((d) => d === 3).length;
 
 console.log(d1Count, '*', d3Count, '=', d1Count * d3Count);
+
+function countArrangements(startIndex: number): number {
+  if (startIndex === joltages.length - 1) {
+    return 0;
+  }
+
+  const sourceJoltage = joltages[startIndex];
+  let paths = -1;
+
+  for (let i = startIndex + 1; i < startIndex + 4 && i < joltages.length; i++) {
+    const adapterJoltage = joltages[i];
+    if (adapterJoltage - sourceJoltage <= 3) {
+      paths += 1 + countArrangements(i);
+    }
+  }
+
+  return paths;
+}
+
+console.log('Valid arrangements:', countArrangements(0) + 1);
