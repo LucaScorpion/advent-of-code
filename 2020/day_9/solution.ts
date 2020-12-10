@@ -19,13 +19,48 @@ function isSumOf2Previous(value: number): boolean {
   return false;
 }
 
-for (let i = preambleLength; i < input.length; i++) {
-  const value = input[i]
-  if (!isSumOf2Previous(value)) {
-    console.log('Not a sum of 2 previous numbers:', value);
-    break;
+function findInvalidNumber(): number {
+  for (let i = preambleLength; i < input.length; i++) {
+    const value = input[i];
+    if (!isSumOf2Previous(value)) {
+      return value;
+    }
+
+    previousNumbers.shift();
+    previousNumbers.push(value);
+  }
+  throw new Error();
+}
+
+const invalidNumber = findInvalidNumber();
+console.log('Not a sum of 2 previous numbers:', invalidNumber);
+
+function findContiguousSetStartingAt(start: number): number | undefined {
+  let index = start;
+  let total = 0;
+  let smallest = input[start];
+  let largest = input[start];
+
+  while (total < invalidNumber) {
+    const cur = input[index];
+    total += cur;
+    index++;
+
+    smallest = Math.min(smallest, cur);
+    largest = Math.max(largest, cur);
   }
 
-  previousNumbers.shift();
-  previousNumbers.push(value);
+  if (total === invalidNumber) {
+    return smallest + largest;
+  }
+
+  return undefined;
+}
+
+for (let i = 0; i < input.length; i++) {
+  const weakness = findContiguousSetStartingAt(i);
+  if (weakness) {
+    console.log('Encryption weakness:', weakness);
+    break;
+  }
 }
