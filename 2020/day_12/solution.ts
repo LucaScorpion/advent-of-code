@@ -59,8 +59,60 @@ function move(ship: Ship, instruction: Instruction): Ship {
   return newState;
 }
 
-let startingState: Ship = { rotation: 0, x: 0, y: 0 };
-const finalState = input.reduce((acc, cur) => move(acc, cur), startingState);
+const finalState1 = input.reduce((acc, cur) => move(acc, cur), { rotation: 0, x: 0, y: 0 });
+console.log('Manhattan distance part 1:', Math.abs(finalState1.x) + Math.abs(finalState1.y));
 
-const distance = Math.abs(finalState.x) + Math.abs(finalState.y);
-console.log('Manhattan distance:', distance);
+// PART 2
+
+interface ShipWithWaypoint {
+  shipX: number;
+  shipY: number;
+  waypointX: number;
+  waypointY: number;
+}
+
+function move2(state: ShipWithWaypoint, instruction: Instruction): ShipWithWaypoint {
+  const newState = { ...state };
+  switch (instruction.char) {
+    case 'N':
+      newState.waypointY += instruction.num;
+      break;
+    case 'S':
+      newState.waypointY -= instruction.num;
+      break;
+    case 'E':
+      newState.waypointX += instruction.num;
+      break;
+    case 'W':
+      newState.waypointX -= instruction.num;
+      break;
+    case 'L':
+      for (let rot = instruction.num; rot > 0; rot -= 90) {
+        const newX = -newState.waypointY;
+        newState.waypointY = newState.waypointX;
+        newState.waypointX = newX;
+      }
+      break;
+    case 'R':
+      for (let rot = instruction.num; rot > 0; rot -= 90) {
+        const newY = -newState.waypointX;
+        newState.waypointX = newState.waypointY;
+        newState.waypointY = newY;
+      }
+      break;
+    case 'F':
+      for (let i = 0; i < instruction.num; i++) {
+        newState.shipX += newState.waypointX;
+        newState.shipY += newState.waypointY;
+      }
+      break;
+  }
+
+  return newState;
+}
+
+const finalState2 = input.reduce(
+  (acc, cur) => move2(acc, cur),
+  { shipX: 0, shipY: 0, waypointX: 10, waypointY: 1 },
+);
+console.log('Manhattan distance part 2:', Math.abs(finalState2.shipX) + Math.abs(finalState2.shipY));
