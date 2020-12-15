@@ -1,0 +1,2 @@
+69 * 34 = 2346
+Valid arrangements: 6044831973376

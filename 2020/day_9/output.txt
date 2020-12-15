@@ -1,0 +1,2 @@
+Not a sum of 2 previous numbers: 556543474
+Encryption weakness: 76096372

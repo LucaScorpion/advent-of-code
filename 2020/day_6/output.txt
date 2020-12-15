@@ -1,0 +1,2 @@
+Sum of any yes count: 6443
+Sum of every yes count: 3232

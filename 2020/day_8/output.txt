@@ -1,0 +1,2 @@
+Part 1 accumulator: 1594
+Part 2 accumulator: 758
