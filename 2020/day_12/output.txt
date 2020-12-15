@@ -1,0 +1,2 @@
+Manhattan distance part 1: 1482
+Manhattan distance part 2: 48739

@@ -1,0 +1,3 @@
+29  *  7  =  203
+Earliest timestamp: 905694340256752
+Took 1496.576 seconds, or 24.942933333333333 minutes
