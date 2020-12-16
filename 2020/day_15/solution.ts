@@ -23,4 +23,12 @@ function step(): void {
 while(turn < 2019) {
   step();
 }
-console.log(currentNumber);
+console.log('2020th number:', currentNumber);
+
+while(turn < (30000000 - 1)) {
+  step();
+  if (turn % 1000000 === 0) {
+    console.log(turn);
+  }
+}
+console.log('30000000th number:', currentNumber);
