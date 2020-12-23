@@ -49,8 +49,12 @@ function isInAnyRange(value: number, ranges: Range[]): boolean {
   return ranges.filter((r) => isInRange(value, r)).length > 0;
 }
 
+const ticketValuesPerField: number[][] = [...ourTicket.map((val) => [val])];
+
 let errorRate = 0;
 nearbyTickets.forEach((ticket) => {
+  let isValid = true;
+
   ticket.forEach((val) => {
     let isValidAnyField = false;
     fields.forEach((field) => {
@@ -61,8 +65,38 @@ nearbyTickets.forEach((ticket) => {
 
     if (!isValidAnyField) {
       errorRate += val;
+      isValid = false;
     }
   });
+
+  if (isValid) {
+    ticket.forEach((val, i) => ticketValuesPerField[i].push(val));
+  }
 });
 
 console.log('Error rate:', errorRate);
+
+const fieldOptions = ticketValuesPerField.map((fieldValues) =>
+  fields.filter((field) =>
+    fieldValues.every((val) => isInAnyRange(val, field.ranges)),
+  ),
+);
+
+const fieldNames: string[] = [];
+for (let round = 0; round < fieldOptions.length; round++) {
+  fieldOptions.forEach((opts, i) => {
+    const freeOpts = opts.filter((opt) => !fieldNames.includes(opt.name));
+    if (freeOpts.length === 1) {
+      fieldNames[i] = freeOpts[0].name;
+    }
+  });
+}
+
+let total = 1;
+fieldNames.forEach((name, i) => {
+  if (name.startsWith('departure ')) {
+    total *= ourTicket[i];
+  }
+});
+
+console.log('Multiplied value:', total);
