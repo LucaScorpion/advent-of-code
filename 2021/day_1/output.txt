@@ -1,0 +1,2 @@
+Single measurement increments: 1374
+Window measurement increments: 1418
