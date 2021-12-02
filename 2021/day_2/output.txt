@@ -1,0 +1,5 @@
+Final position: horizontal 1817, depth 1072
+Horizontal * depth: 1947824
+With aim:
+Final position: horizontal 1817, depth 997833
+Horizontal * depth: 1813062561
