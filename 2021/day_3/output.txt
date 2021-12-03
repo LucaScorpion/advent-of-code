@@ -1,0 +1,4 @@
+Gamma: 281, epsilon: 3814, power consumption: 1071734
+Oxygen generator rating: 1679
+CO2 scrubber rating: 3648
+Life support rating: 6124992
