@@ -61,8 +61,8 @@ function checkWin(board: Board): boolean {
   return false;
 }
 
-function boardScore(board: Board): number {
-  return board.flat().map((s) => s.marked ? 0 : s.value).reduce((acc, cur) => acc + cur, 0);
+function boardScore(board: WinningBoard): number {
+  return board.board.flat().map((s) => s.marked ? 0 : s.value).reduce((acc, cur) => acc + cur, 0) * board.lastNumber;
 }
 
 function drawNumber(value: number): void {
@@ -77,14 +77,33 @@ function drawNumber(value: number): void {
   });
 }
 
-const boards = parseBoards(lines.slice(1));
+let boards = parseBoards(lines.slice(1));
+
+interface WinningBoard {
+  board: Board;
+  lastNumber: number;
+}
+
+const winners: WinningBoard[] = [];
 
 for (const drawn of drawnNumbers) {
   drawNumber(drawn);
 
-  const winner = boards.find(checkWin);
-  if (winner) {
-    console.log(`Winning score: ${boardScore(winner) * drawn}`);
+  boards = boards.filter((board) => {
+    if (checkWin(board)) {
+      winners.push({
+        board,
+        lastNumber: drawn,
+      });
+      return false;
+    }
+    return true;
+  });
+
+  if (!boards.length) {
     break;
   }
 }
+
+console.log(`First winner: ${boardScore(winners[0])}`);
+console.log(`Last winner: ${boardScore(winners[winners.length - 1])}`);
