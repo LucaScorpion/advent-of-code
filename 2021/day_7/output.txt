@@ -1,0 +1,2 @@
+Linear fuel requirement to align at position 339: 328318
+Binomial fuel requirement to align at position 467: 89791146
