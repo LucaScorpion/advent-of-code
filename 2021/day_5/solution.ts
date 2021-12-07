@@ -43,7 +43,7 @@ function addVentToGrid(grid: number[][], pos: Position): void {
 function drawGrid(grid: number[][]): void {
   for (const row of grid) {
     let rowStr = '';
-    for (let x = 0; x < gridWidth; x++) {
+    for (let x = 0; x <= gridWidth; x++) {
       rowStr = `${rowStr}${(row || [])[x] || '.'}`;
     }
     console.log(rowStr);
