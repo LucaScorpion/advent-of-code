@@ -50,22 +50,34 @@ function drawGrid(grid: number[][]): void {
   }
 }
 
-const horVertVentLines = ventLines.filter((l) => l.from.x === l.to.x || l.from.y === l.to.y);
-const horVertGrid: number[][] = [];
-horVertVentLines.forEach((v) => {
-  const fromX = Math.min(v.from.x, v.to.x);
-  const toX = Math.max(v.from.x, v.to.x);
-  const fromY = Math.min(v.from.y, v.to.y);
-  const toY = Math.max(v.from.y, v.to.y);
+function processLines(lines: Line[]): number[][] {
+  const grid: number[][] = [];
 
-  for (let x = fromX; x <= toX; x++) {
-    for (let y = fromY; y <= toY; y++) {
-      addVentToGrid(horVertGrid, { x, y });
+  lines.forEach((l) => {
+    const xSign = Math.sign(l.to.x - l.from.x);
+    const ySign = Math.sign(l.to.y - l.from.y);
+
+    let curPos: Position = { ...l.from };
+    while (curPos.x !== l.to.x || curPos.y !== l.to.y) {
+      addVentToGrid(grid, curPos);
+      curPos = {
+        x: curPos.x + xSign,
+        y: curPos.y + ySign,
+      };
     }
-  }
-});
+    addVentToGrid(grid, curPos);
+  });
 
+  return grid;
+}
+
+const horVertVentLines = ventLines.filter((l) => l.from.x === l.to.x || l.from.y === l.to.y);
+const horVertGrid = processLines(horVertVentLines);
 // drawGrid(horVertGrid);
+const horVertOverlapCount = horVertGrid.flat().filter((n) => n > 1).length;
+console.log(`Overlapping horizontal and vertical lines: ${horVertOverlapCount}`);
 
-const overlapCount = horVertGrid.flat().filter((n) => n > 1).length;
+const fullGrid = processLines(ventLines);
+// drawGrid(fullGrid);
+const overlapCount = fullGrid.flat().filter((n) => n > 1).length;
 console.log(`Overlapping lines: ${overlapCount}`);

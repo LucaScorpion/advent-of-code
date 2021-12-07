@@ -1,0 +1,2 @@
+Overlapping horizontal and vertical lines: 7085
+Overlapping lines: 20271
