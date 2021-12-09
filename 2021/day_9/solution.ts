@@ -30,19 +30,6 @@ const basins: Record<string, string[]> = {};
 // Cell coords to corresponding sink coords.
 const cellToSink: Record<string, string> = {};
 
-// for (let y = 0; y < grid.length; y++) {
-//   for (let x = 0; x < grid[y].length; x++) {
-//     const height = grid[y][x];
-//     const adjacent = [getCell(x - 1, y), getCell(x + 1, y), getCell(x, y - 1), getCell(x, y + 1)]
-//       .filter((c): c is Cell => c != null)
-//       .map(c => c.height);
-//
-//     if (height < Math.min(...adjacent)) {
-//       totalRisk += height + 1;
-//     }
-//   }
-// }
-
 function findSink(x: number, y: number): string {
   const coord = getCoordString(x, y);
 
