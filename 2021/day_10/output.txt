@@ -1,0 +1,2 @@
+Syntax error score: 392043
+Middle completion score: 1605968119

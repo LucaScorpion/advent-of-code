@@ -4,25 +4,40 @@ const lines = fs.readFileSync(0).toString().trim().split('\n').map((l) => l.spli
 
 type ChunkType = '(' | '[' | '{' | '<';
 
-const chunkPairs: Record<ChunkType, string> = {
-  '(': ')',
-  '[': ']',
-  '{': '}',
-  '<': '>',
-};
+interface ChunkInfo {
+  closer: string;
+  illegalScore: number;
+  completionScore: number;
+}
 
-const chunkPairsReverse: Record<string, ChunkType> = {
+const chunkTypeFromCloser: Record<string, ChunkType> = {
   ')': '(',
   ']': '[',
   '}': '{',
   '>': '<',
 };
 
-const illegalScore: Record<string, number> = {
-  ')': 3,
-  ']': 57,
-  '}': 1197,
-  '>': 25137,
+const chunkInfo: Record<string, ChunkInfo> = {
+  '(': {
+    closer: ')',
+    illegalScore: 3,
+    completionScore: 1,
+  },
+  '[': {
+    closer: ']',
+    illegalScore: 57,
+    completionScore: 2,
+  },
+  '{': {
+    closer: '}',
+    illegalScore: 1197,
+    completionScore: 3,
+  },
+  '<': {
+    closer: '>',
+    illegalScore: 25137,
+    completionScore: 4,
+  },
 };
 
 interface Chunk {
@@ -31,10 +46,11 @@ interface Chunk {
 }
 
 function isChunkOpener(char: string): char is ChunkType {
-  return Object.keys(chunkPairs).includes(char);
+  return Object.values(chunkTypeFromCloser).includes(char as ChunkType);
 }
 
 let corruptScore = 0;
+const incompleteScores: number[] = [];
 
 lines.forEach((line) => {
   const stack: ChunkType[] = [];
@@ -45,12 +61,27 @@ lines.forEach((line) => {
       continue;
     }
 
-    if (chunkPairsReverse[char] !== stack.pop()) {
+    const type = chunkTypeFromCloser[char];
+    if (type !== stack.pop()) {
       // The line is corrupt.
-      corruptScore += illegalScore[char];
-      break;
+      corruptScore += chunkInfo[type].illegalScore;
+      return;
     }
+  }
+
+  if (stack.length > 0) {
+    // The line is incomplete.
+    incompleteScores.push(
+      stack
+        .reverse()
+        .map((c) => chunkInfo[c].completionScore)
+        .reduce((acc, cur) => acc * 5 + cur, 0),
+    );
   }
 });
 
+incompleteScores.sort((a, b) => a - b);
+const middleScore = incompleteScores[(incompleteScores.length - 1) / 2];
+
 console.log(`Syntax error score: ${corruptScore}`);
+console.log(`Middle completion score: ${middleScore}`);
