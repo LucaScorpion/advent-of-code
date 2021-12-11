@@ -6,12 +6,25 @@ const FLASH_ENERGY = 10;
 const octopusCount = input.length * input[0].length;
 const fancy = !!process.env.FANCY;
 
+const fancyFlashColors = [
+  255,
+  249,
+  244,
+  238,
+  232,
+];
+
 interface Octopus {
   energy: number;
   flashed: boolean;
+  flashStepsAgo: number;
 }
 
-const grid: Octopus[][] = input.map((row) => row.map((cell) => ({ energy: cell, flashed: false })));
+const grid: Octopus[][] = input.map((row) => row.map((cell) => ({
+  energy: cell,
+  flashed: false,
+  flashStepsAgo: Number.POSITIVE_INFINITY,
+})));
 
 function checkFlash(x: number, y: number): void {
   const cell = grid[y][x];
@@ -48,7 +61,12 @@ function checkFlash(x: number, y: number): void {
 
 async function logGrid(): Promise<void> {
   console.clear();
-  console.log(grid.map((row) => row.map((cell) => cell.flashed ? '\x1b[96;106m#\x1b[0m' : '·').join('')).join('\n'));
+  console.log(grid.map((row) =>
+    row.map((cell) => {
+      const color = fancyFlashColors[Math.min(cell.flashStepsAgo, fancyFlashColors.length - 1)];
+      return `\x1b[38;5;${color}m\x1b[48;5;${color}m##\x1b[0m`;
+    }).join(''),
+  ).join('\n'));
   await new Promise((res) => setTimeout(res, 100));
 }
 
@@ -60,26 +78,28 @@ async function step(): Promise<number> {
     });
   });
 
-  if (fancy) {
-    await logGrid();
-  }
-
   // Reset all the flashed flags.
   let flashCount = 0;
   grid.forEach((row) => {
     row.forEach((cell) => {
+      cell.flashStepsAgo++;
       if (cell.flashed) {
         cell.energy = 0;
+        cell.flashStepsAgo = 0;
         flashCount++;
       }
       cell.flashed = false;
     });
   });
 
+  if (fancy) {
+    await logGrid();
+  }
+
   return flashCount;
 }
 
-let flashCount = 0;
+let totalFlashCount = 0;
 let synchronizedStepNumber: number | undefined = undefined;
 
 (async () => {
@@ -88,7 +108,7 @@ let synchronizedStepNumber: number | undefined = undefined;
   }
 
   for (let s = 0; s < STEPS; s++) {
-    flashCount += await step();
+    totalFlashCount += await step();
   }
 
   for (let s = STEPS; synchronizedStepNumber == undefined; s++) {
@@ -97,6 +117,6 @@ let synchronizedStepNumber: number | undefined = undefined;
     }
   }
 
-  console.log(`Total flashes after ${STEPS} steps: ${flashCount}`);
+  console.log(`Total flashes after ${STEPS} steps: ${totalFlashCount}`);
   console.log(`Synchronized flash at step: ${synchronizedStepNumber}`);
 })();
