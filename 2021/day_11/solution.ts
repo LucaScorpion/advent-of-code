@@ -4,6 +4,7 @@ const input = fs.readFileSync(0).toString().trim().split('\n').map((l) => l.spli
 const STEPS = 100;
 const FLASH_ENERGY = 10;
 const octopusCount = input.length * input[0].length;
+const fancy = !!process.env.FANCY;
 
 interface Octopus {
   energy: number;
@@ -45,12 +46,13 @@ function checkFlash(x: number, y: number): void {
   }
 }
 
-function logGrid(): void {
-  console.log(grid.map((row) => row.map((cell) => cell.energy).join('')).join('\n'));
-  console.log();
+async function logGrid(): Promise<void> {
+  console.clear();
+  console.log(grid.map((row) => row.map((cell) => cell.flashed ? '\x1b[96;106m#\x1b[0m' : '·').join('')).join('\n'));
+  await new Promise((res) => setTimeout(res, 100));
 }
 
-function step(): number {
+async function step(): Promise<number> {
   grid.forEach((row, y) => {
     row.forEach((cell, x) => {
       cell.energy++;
@@ -58,9 +60,12 @@ function step(): number {
     });
   });
 
-  let flashCount = 0;
+  if (fancy) {
+    await logGrid();
+  }
 
-  // Reset all the flashed flags, check for synchronization.
+  // Reset all the flashed flags.
+  let flashCount = 0;
   grid.forEach((row) => {
     row.forEach((cell) => {
       if (cell.flashed) {
@@ -77,17 +82,21 @@ function step(): number {
 let flashCount = 0;
 let synchronizedStepNumber: number | undefined = undefined;
 
-// logGrid();
-for (let s = 0; s < STEPS; s++) {
-  flashCount += step();
-  // logGrid();
-}
-
-for (let s = STEPS; synchronizedStepNumber == undefined; s++) {
-  if (step() === octopusCount) {
-    synchronizedStepNumber = s + 1;
+(async () => {
+  if (fancy) {
+    await logGrid();
   }
-}
 
-console.log(`Total flashes after ${STEPS} steps: ${flashCount}`);
-console.log(`Synchronized flash at step: ${synchronizedStepNumber}`);
+  for (let s = 0; s < STEPS; s++) {
+    flashCount += await step();
+  }
+
+  for (let s = STEPS; synchronizedStepNumber == undefined; s++) {
+    if (await step() === octopusCount) {
+      synchronizedStepNumber = s + 1;
+    }
+  }
+
+  console.log(`Total flashes after ${STEPS} steps: ${flashCount}`);
+  console.log(`Synchronized flash at step: ${synchronizedStepNumber}`);
+})();
