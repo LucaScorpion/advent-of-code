@@ -1,0 +1,2 @@
+Total flashes after 100 steps: 1613
+Synchronized flash at step: 510

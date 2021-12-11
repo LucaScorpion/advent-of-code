@@ -3,6 +3,7 @@ import fs from 'fs';
 const input = fs.readFileSync(0).toString().trim().split('\n').map((l) => l.split('').map(Number));
 const STEPS = 100;
 const FLASH_ENERGY = 10;
+const octopusCount = input.length * input[0].length;
 
 interface Octopus {
   energy: number;
@@ -10,8 +11,6 @@ interface Octopus {
 }
 
 const grid: Octopus[][] = input.map((row) => row.map((cell) => ({ energy: cell, flashed: false })));
-
-let flashCount = 0;
 
 function checkFlash(x: number, y: number): void {
   const cell = grid[y][x];
@@ -51,7 +50,7 @@ function logGrid(): void {
   console.log();
 }
 
-function step(): void {
+function step(): number {
   grid.forEach((row, y) => {
     row.forEach((cell, x) => {
       cell.energy++;
@@ -59,7 +58,9 @@ function step(): void {
     });
   });
 
-  // Reset all the flashed flags.
+  let flashCount = 0;
+
+  // Reset all the flashed flags, check for synchronization.
   grid.forEach((row) => {
     row.forEach((cell) => {
       if (cell.flashed) {
@@ -69,12 +70,24 @@ function step(): void {
       cell.flashed = false;
     });
   });
+
+  return flashCount;
 }
+
+let flashCount = 0;
+let synchronizedStepNumber: number | undefined = undefined;
 
 // logGrid();
 for (let s = 0; s < STEPS; s++) {
-  step();
+  flashCount += step();
   // logGrid();
 }
 
+for (let s = STEPS; synchronizedStepNumber == undefined; s++) {
+  if (step() === octopusCount) {
+    synchronizedStepNumber = s + 1;
+  }
+}
+
 console.log(`Total flashes after ${STEPS} steps: ${flashCount}`);
+console.log(`Synchronized flash at step: ${synchronizedStepNumber}`);
