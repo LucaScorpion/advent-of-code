@@ -1,0 +1,2 @@
+Available paths: 4749
+Available paths with small revisit: 123054

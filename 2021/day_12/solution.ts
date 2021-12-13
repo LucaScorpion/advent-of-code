@@ -37,7 +37,7 @@ lines.forEach((line) => {
   storePassage(toName, fromName);
 });
 
-function findPaths(from: Cave, path: string[]): string[][] {
+function findPaths(from: Cave, path: string[], revisitedSmallCave: boolean): string[][] {
   if (from.name === 'end') {
     return [path];
   }
@@ -47,17 +47,25 @@ function findPaths(from: Cave, path: string[]): string[][] {
   from.neighbors.forEach((neighborName) => {
     const neighbor = getCave(neighborName);
 
-    // Only visit small caves at most once.
-    if (neighbor.small && path.includes(neighbor.name)) {
+    // Cannot revisit the start cave.
+    if (neighbor.name === 'start') {
+      return;
+    }
+
+    // Check if we already visited a small cave twice.
+    let willRevisitSmall = neighbor.small && path.includes(neighbor.name);
+    if (willRevisitSmall && revisitedSmallCave) {
       return;
     }
 
     const newPath = [...path, neighbor.name];
-    resultPaths.push(...findPaths(neighbor, newPath));
+    resultPaths.push(...findPaths(neighbor, newPath, willRevisitSmall || revisitedSmallCave));
   });
 
   return resultPaths;
 }
 
-const paths = findPaths(getCave('start'), ['start']);
-console.log(`Available paths: ${paths.length}`);
+const paths1 = findPaths(getCave('start'), ['start'], true);
+console.log(`Available paths: ${paths1.length}`);
+const paths2 = findPaths(getCave('start'), ['start'], false);
+console.log(`Available paths with small revisit: ${paths2.length}`);
