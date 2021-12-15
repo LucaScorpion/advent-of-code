@@ -1,0 +1,2 @@
+Most common - least common after 10 steps = 2851
+Most common - least common after 40 steps = 10002813279337
