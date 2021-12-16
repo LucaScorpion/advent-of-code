@@ -56,11 +56,50 @@ function heuristic(node: Node, gridSize: Position): number {
   return ((gridSize.x - 1) - node.position.x) + ((gridSize.y - 1) - node.position.y);
 }
 
+interface PriorityQueueItem<T> {
+  value: T;
+  priority: number;
+}
+
+class UniquePriorityQueue<T> {
+  private queue: PriorityQueueItem<T>[] = [];
+  private set = new Set<T>();
+
+  public insert(value: T, priority: number): void {
+    if (this.set.has(value)) {
+      return;
+    }
+    this.set.add(value);
+
+    let insertPos = 0;
+    for (; insertPos < this.queue.length && priority < this.queue[insertPos].priority; insertPos++) {
+      // Just increment insertPos.
+    }
+
+    this.queue.splice(insertPos, 0, {
+      value,
+      priority,
+    });
+  }
+
+  public pop(): T {
+    const popped = this.queue.pop();
+    if (!popped) {
+      throw new Error('Queue is empty');
+    }
+    this.set.delete(popped.value);
+    return popped.value;
+  }
+
+  public get length() {
+    return this.queue.length;
+  }
+}
+
 function findPath(graph: Node[], from: Node, target: Node, gridSize: Position): Node[] {
   const distances = new Map<Node, number>();
   const heuristics = new Map<Node, number>();
   const prevNodes = new Map<Node, Node>();
-  let queue: Node[] = [from];
 
   graph.forEach((n) => {
     distances.set(n, Number.POSITIVE_INFINITY);
@@ -69,9 +108,11 @@ function findPath(graph: Node[], from: Node, target: Node, gridSize: Position): 
   distances.set(from, 0);
   heuristics.set(from, heuristic(from, gridSize));
 
+  const queue = new UniquePriorityQueue<Node>();
+  queue.insert(from, heuristics.get(from)!);
+
   while (queue.length) {
-    const current = queue.reduce((acc, cur) => heuristics.get(acc)! < heuristics.get(cur)! ? acc : cur);
-    queue = queue.filter((n) => n !== current);
+    const current = queue.pop();
 
     // Check if we're at the goal.
     if (current === target) {
@@ -95,9 +136,7 @@ function findPath(graph: Node[], from: Node, target: Node, gridSize: Position): 
         distances.set(neighbor, neighborDist);
         heuristics.set(neighbor, neighborDist + heuristic(neighbor, gridSize));
 
-        if (!queue.includes(neighbor)) {
-          queue.push(neighbor);
-        }
+        queue.insert(neighbor, heuristics.get(neighbor)!);
       }
     });
   }
