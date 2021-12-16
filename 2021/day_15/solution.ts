@@ -50,24 +50,32 @@ function createGraph(grid: number[][]): Node[] {
   return graph;
 }
 
-function findPath(graph: Node[], from: Node, target: Node): Node[] {
+function heuristic(node: Node, gridSize: Position): number {
+  return ((gridSize.x - 1) - node.position.x) + ((gridSize.y - 1) - node.position.y);
+}
+
+function findPath(graph: Node[], from: Node, target: Node, gridSize: Position): Node[] {
   const distances = new Map<Node, number>();
+  const heuristics = new Map<Node, number>();
   const prevNodes = new Map<Node, Node>();
-  let queue: Node[] = [];
+  let queue: Node[] = [from];
 
   graph.forEach((n) => {
     distances.set(n, Number.POSITIVE_INFINITY);
-    queue.push(n);
+    heuristics.set(n, Number.POSITIVE_INFINITY);
   });
   distances.set(from, 0);
+  heuristics.set(from, heuristic(from, gridSize));
 
   while (queue.length) {
-    const check = queue.reduce((acc, cur) => distances.get(acc)! < distances.get(cur)! ? acc : cur);
-    queue = queue.filter((n) => n !== check);
+    const current = queue.reduce((acc, cur) => heuristics.get(acc)! < heuristics.get(cur)! ? acc : cur);
+    queue = queue.filter((n) => n !== current);
 
-    if (check === target) {
+    // Check if we're at the goal.
+    if (current === target) {
       const path = [target];
 
+      // Build the path.
       let prevNode = prevNodes.get(target);
       while (prevNode) {
         path.push(prevNode);
@@ -77,11 +85,17 @@ function findPath(graph: Node[], from: Node, target: Node): Node[] {
       return path.reverse();
     }
 
-    check.neighbors.forEach((neighbor) => {
-      const neighborDist = distances.get(check)! + neighbor.value;
+    // Check all neighbors.
+    current.neighbors.forEach((neighbor) => {
+      const neighborDist = distances.get(current)! + neighbor.value;
       if (neighborDist < distances.get(neighbor)!) {
+        prevNodes.set(neighbor, current);
         distances.set(neighbor, neighborDist);
-        prevNodes.set(neighbor, check);
+        heuristics.set(neighbor, neighborDist + heuristic(neighbor, gridSize));
+
+        if (!queue.includes(neighbor)) {
+          queue.push(neighbor);
+        }
       }
     });
   }
@@ -90,7 +104,9 @@ function findPath(graph: Node[], from: Node, target: Node): Node[] {
 }
 
 const smallGraph = createGraph(input);
-const smallRisk = findPath(smallGraph, smallGraph[0], smallGraph[smallGraph.length - 1]).slice(1).reduce((acc, cur) => acc + cur.value, 0);
+const smallSize = { x: input[0].length, y: input.length };
+const smallRisk = findPath(smallGraph, smallGraph[0], smallGraph[smallGraph.length - 1], smallSize)
+  .slice(1).reduce((acc, cur) => acc + cur.value, 0);
 console.log(`Risk on small cave: ${smallRisk}`);
 
 const largeInput = [...input.map((r) => [...r])];
@@ -112,5 +128,7 @@ for (let y = 0; y < LARGE_SCALE - 1; y++) {
 }
 
 const largeGraph = createGraph(largeInput);
-const largeRisk = findPath(largeGraph, largeGraph[0], largeGraph[largeGraph.length - 1]).slice(1).reduce((acc, cur) => acc + cur.value, 0);
+const largeSize = { x: largeInput[0].length, y: largeInput.length };
+const largeRisk = findPath(largeGraph, largeGraph[0], largeGraph[largeGraph.length - 1], largeSize)
+  .slice(1).reduce((acc, cur) => acc + cur.value, 0);
 console.log(`Risk on large cave: ${largeRisk}`);
