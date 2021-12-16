@@ -14,36 +14,38 @@ interface Node {
   position: Position;
 }
 
+function addNeighbor(node: Node, neighbor?: Node): void {
+  if (neighbor) {
+    node.neighbors.push(neighbor);
+  }
+}
+
 function createGraph(grid: number[][]): Node[] {
   const graph: Node[] = [];
+  const nodesByPos: Record<string, Node> = {};
 
   // Create nodes for all grid cells.
   for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid.length; x++) {
-      graph.push({
+    for (let x = 0; x < grid[y].length; x++) {
+      const node: Node = {
         value: grid[y][x],
         neighbors: [],
         position: { x, y },
-      });
+      };
+      graph.push(node);
+      nodesByPos[`${x};${y}`] = node;
     }
   }
 
   // Populate all node neighbors.
   for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid.length; x++) {
-      const node = graph.find((n) => n.position.x === x && n.position.y === y)!;
+    for (let x = 0; x < grid[y].length; x++) {
+      const node = nodesByPos[`${x};${y}`];
 
-      for (let dY = -1; dY <= 1; dY++) {
-        for (let dX = -1; dX <= 1; dX++) {
-          if (Math.abs(dX) === Math.abs(dY)) {
-            continue;
-          }
-          const neighbor = graph.find((n) => n.position.x === x + dX && n.position.y === y + dY);
-          if (neighbor) {
-            node.neighbors.push(neighbor);
-          }
-        }
-      }
+      addNeighbor(node, nodesByPos[`${x - 1};${y}`]);
+      addNeighbor(node, nodesByPos[`${x + 1};${y}`]);
+      addNeighbor(node, nodesByPos[`${x};${y - 1}`]);
+      addNeighbor(node, nodesByPos[`${x};${y + 1}`]);
     }
   }
 

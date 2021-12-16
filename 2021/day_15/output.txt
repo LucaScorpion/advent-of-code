@@ -1,0 +1,2 @@
+Risk on small cave: 755
+Risk on large cave: 3016
