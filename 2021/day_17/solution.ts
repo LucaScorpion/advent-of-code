@@ -46,8 +46,10 @@ function inTarget(pos: Position): undefined | boolean {
 }
 
 let maxY = Number.NEGATIVE_INFINITY;
-for (let x = 0; x < 250; x++) {
-  for (let y = 0; y < 250; y++) {
+const velocities = new Set<string>();
+
+for (let x = 0; x < 1000; x++) {
+  for (let y = -1000; y < 1000; y++) {
     const probe: Position = { x: 0, y: 0 };
     const velocity: Position = { x, y };
     let checkMaxY = Number.NEGATIVE_INFINITY;
@@ -61,8 +63,10 @@ for (let x = 0; x < 250; x++) {
 
     if (hit) {
       maxY = Math.max(maxY, checkMaxY);
+      velocities.add(`${x};${y}`);
     }
   }
 }
 
-console.log(maxY);
+console.log(`Maximum trick shot height: ${maxY}`);
+console.log(`Possible velocity values: ${velocities.size}`);

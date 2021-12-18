@@ -1,0 +1,2 @@
+Maximum trick shot height: 6555
+Possible velocity values: 4973
