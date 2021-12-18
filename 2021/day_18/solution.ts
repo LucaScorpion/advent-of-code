@@ -125,7 +125,13 @@ function parseNode(value: SfNumber): SfNode {
 }
 
 function add(left: SfNode, right: SfNode): SfNode {
-  return new SfPair(left, right);
+  const result = new SfPair(left, right);
+
+  while (reduce(result)) {
+    // Keep reducing until there's nothing left to reduce.
+  }
+
+  return result;
 }
 
 function reduce(node: SfNode): boolean {
@@ -191,10 +197,20 @@ function checkSplit(node: SfNode): boolean {
 let rootNode = parseNode(input[0]);
 for (let i = 1; i < input.length; i++) {
   rootNode = add(rootNode, parseNode(input[i]));
+}
 
-  while (reduce(rootNode)) {
-    // Keep reducing until there's nothing left to reduce.
+console.log(`Total magnitude: ${rootNode.magnitude()}`);
+
+let maxMagnitude = 0;
+for (let i = 0; i < input.length; i++) {
+  for (let j = 0; j < input.length; j++) {
+    if (i === j) {
+      continue;
+    }
+
+    const checkMagnitude = add(parseNode(input[i]), parseNode(input[j])).magnitude();
+    maxMagnitude = Math.max(maxMagnitude, checkMagnitude);
   }
 }
 
-console.log(`Magnitude: ${rootNode.magnitude()}`);
+console.log(`Maximum magnitude: ${maxMagnitude}`);
