@@ -55,7 +55,7 @@ function parsePacketLiteral(bin: string, packet: Packet): ParseResult<PacketLite
   let valueString = '';
 
   let i = 0;
-  for (; i < bin.length - 5; i += 5) {
+  for (; i < bin.length - 4; i += 5) {
     let group = bin.substring(i, i + 5);
     valueString = `${valueString}${group.substring(1)}`;
 
@@ -141,6 +141,10 @@ function isPacketOperator(packet: Packet): packet is PacketOperator {
   return 'subPackets' in packet;
 }
 
+function isPacketLiteral(packet: Packet): packet is PacketLiteral {
+  return !isPacketOperator(packet);
+}
+
 function forEachPacket(packet: Packet, fn: (p: Packet) => void): void {
   fn(packet);
   if (isPacketOperator(packet)) {
@@ -148,8 +152,32 @@ function forEachPacket(packet: Packet, fn: (p: Packet) => void): void {
   }
 }
 
+const operators: Record<number, (values: number[]) => number> = {
+  0: values => values.reduce((acc, cur) => acc + cur, 0),
+  1: values => values.reduce((acc, cur) => acc * cur, 1),
+  2: values => Math.min(...values),
+  3: values => Math.max(...values),
+  5: values => values[0] > values[1] ? 1 : 0,
+  6: values => values[0] < values[1] ? 1 : 0,
+  7: values => values[0] === values[1] ? 1 : 0,
+};
+
+function evaluate(packet: Packet): number {
+  if (isPacketLiteral(packet)) {
+    return packet.value;
+  }
+
+  if (isPacketOperator(packet)) {
+    const subValues = packet.subPackets.map(evaluate);
+    return operators[packet.typeId](subValues);
+  }
+
+  throw new Error('Unknown packet type.');
+}
+
 const outerPacket = parsePacket(binaryInput).packet;
 
 let totalVersions = 0;
 forEachPacket(outerPacket, (p) => totalVersions += p.version);
 console.log(`Total versions: ${totalVersions}`);
+console.log(`Evaluated expression: ${evaluate(outerPacket)}`);
