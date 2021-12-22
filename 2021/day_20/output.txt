@@ -1,0 +1,2 @@
+Lit pixels after 2 enhancements: 5301
+Lit pixels after 50 enhancements: 19492
