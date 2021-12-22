@@ -4,18 +4,18 @@ const [algo, imgInput] = fs.readFileSync(0).toString().trim().split('\n\n');
 const imgInputLines = imgInput.split('\n');
 
 interface Image {
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
   litPixels: Set<string>;
 }
 
 const initialImage: Image = {
-  minX: 0,
-  maxX: imgInputLines[0].length - 1,
-  minY: 0,
-  maxY: imgInputLines.length - 1,
+  left: 0,
+  right: imgInputLines[0].length - 1,
+  top: 0,
+  bottom: imgInputLines.length - 1,
   litPixels: new Set(),
 };
 
@@ -31,18 +31,27 @@ function coordString(x: number, y: number): string {
   return `${x},${y}`;
 }
 
-function processImage(old: Image): Image {
+function processImage(old: Image, defaultLit: boolean): Image {
   const result: Image = { ...old, litPixels: new Set() };
 
   // Process all pixels.
-  for (let x = result.minX; x <= result.maxX; x++) {
-    for (let y = result.minY; y <= result.maxY; y++) {
+  for (let x = result.left - 1; x <= result.right + 1; x++) {
+    for (let y = result.top - 1; y <= result.bottom + 1; y++) {
       // Get the number value for the pixel.
       let binary = '';
       for (let dY = -1; dY <= 1; dY++) {
         for (let dX = -1; dX <= 1; dX++) {
-          const c = coordString(x + dX, y + dY);
-          binary = `${binary}${old.litPixels.has(c) ? 1 : 0}`;
+          let nX = x + dX;
+          let nY = y + dY;
+          let lit: boolean;
+
+          if (nX < result.left || nX > result.right || nY < result.top || nY > result.bottom) {
+            lit = defaultLit;
+          } else {
+            lit = old.litPixels.has(coordString(nX, nY));
+          }
+
+          binary = `${binary}${lit ? 1 : 0}`;
         }
       }
 
@@ -60,27 +69,27 @@ function processImageTwice(old: Image): Image {
   let result = { ...old };
 
   // Pad the entire image.
-  result.minX -= 3;
-  result.maxX += 3;
-  result.minY -= 3;
-  result.maxY += 3;
+  result.left -= 1;
+  result.right += 1;
+  result.top -= 1;
+  result.bottom += 1;
 
-  result = processImage(processImage(result));
+  result = processImage(processImage(result, false), algo[0] === '#');
 
   // Remove one layer of padding.
-  result.minX += 1;
-  result.maxX -= 1;
-  result.minY += 1;
-  result.maxY -= 1;
+  // result.minX += 1;
+  // result.maxX -= 1;
+  // result.minY += 1;
+  // result.maxY -= 1;
 
   // Remove any lit pixels outside the image.
-  for (let x = result.minX; x <= result.maxX; x++) {
-    for (let y = result.minY; y <= result.maxY; y++) {
-      if (x >= result.minX && x <= result.maxX && y >= result.minY && y <= result.maxY) {
+  for (let x = result.left; x <= result.right; x++) {
+    for (let y = result.top; y <= result.bottom; y++) {
+      if (x >= result.left && x <= result.right && y >= result.top && y <= result.bottom) {
         continue;
       }
 
-      result.litPixels.delete(coordString(x, y));
+      // result.litPixels.delete(coordString(x, y));
     }
   }
 
