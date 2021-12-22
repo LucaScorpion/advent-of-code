@@ -2,6 +2,7 @@ import fs from 'fs';
 
 const [algo, imgInput] = fs.readFileSync(0).toString().trim().split('\n\n');
 const imgInputLines = imgInput.split('\n');
+const ENHANCES = 50;
 
 interface Image {
   left: number;
@@ -69,32 +70,21 @@ function processImageTwice(old: Image): Image {
   let result = { ...old };
 
   // Pad the entire image.
-  result.left -= 1;
-  result.right += 1;
-  result.top -= 1;
-  result.bottom += 1;
+  result.left -= 2;
+  result.right += 2;
+  result.top -= 2;
+  result.bottom += 2;
 
-  result = processImage(processImage(result, false), algo[0] === '#');
-
-  // Remove one layer of padding.
-  // result.minX += 1;
-  // result.maxX -= 1;
-  // result.minY += 1;
-  // result.maxY -= 1;
-
-  // Remove any lit pixels outside the image.
-  for (let x = result.left; x <= result.right; x++) {
-    for (let y = result.top; y <= result.bottom; y++) {
-      if (x >= result.left && x <= result.right && y >= result.top && y <= result.bottom) {
-        continue;
-      }
-
-      // result.litPixels.delete(coordString(x, y));
-    }
-  }
-
-  return result;
+  return processImage(processImage(result, false), algo[0] === '#');
 }
 
-const afterTwo = processImageTwice(initialImage);
-console.log(`Lit pixels after 2 enhancements: ${afterTwo.litPixels.size}`);
+let enhanced = initialImage;
+for (let i = 0; i < ENHANCES; i += 2) {
+  enhanced = processImageTwice(enhanced);
+
+  if (i === 0) {
+    console.log(`Lit pixels after 2 enhancements: ${enhanced.litPixels.size}`);
+  }
+}
+
+console.log(`Lit pixels after ${ENHANCES} enhancements: ${enhanced.litPixels.size}`);
