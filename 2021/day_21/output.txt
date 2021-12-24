@@ -1,0 +1,2 @@
+Losing score times dice rolls: 512442
+Most wins across dirac universes: 346642902541848
