@@ -3,4 +3,12 @@
 dayDir="./day_$1"
 inputFile="$dayDir/input.txt"
 
-npm start "$dayDir/solution."* < "$inputFile"
+if [ -f "$dayDir/solution.ts" ]
+then
+  npm start "$dayDir/solution.ts" < "$inputFile"
+fi
+
+if [ -f "$dayDir/solution.go" ]
+then
+  go run "$dayDir/solution.go" < "$inputFile"
+fi
