@@ -24,6 +24,12 @@ var decryption = map[string]shape{
 	"Z": scissors,
 }
 
+var decryptionTwo = map[string]gameResult{
+	"X": lose,
+	"Y": draw,
+	"Z": win,
+}
+
 var shapeScores = map[shape]int{
 	rock:     1,
 	paper:    2,
@@ -56,22 +62,44 @@ func main() {
 		lines = append(lines, stdin.Text())
 	}
 
-	guide := make([]strategy, 0)
+	guideOne := make([]strategy, 0)
+	guideTwo := make([]strategy, 0)
+
 	for _, line := range lines {
 		parts := strings.Split(line, " ")
-		guide = append(guide, strategy{
-			opponent: decryption[parts[0]],
+		opponent := decryption[parts[0]]
+
+		guideOne = append(guideOne, strategy{
+			opponent: opponent,
 			you:      decryption[parts[1]],
+		})
+
+		wantedOutcome := decryptionTwo[parts[1]]
+		var you shape
+		for s := 0; s < 3; s++ {
+			you = shape(s)
+			if getOutcome(you, opponent) == wantedOutcome {
+				break
+			}
+		}
+
+		guideTwo = append(guideTwo, strategy{
+			opponent: opponent,
+			you:      you,
 		})
 	}
 
-	totalScore := 0
-	for _, g := range guide {
-		totalScore += shapeScores[g.you]
-		totalScore += gameResultScores[getOutcome(g.you, g.opponent)]
-	}
+	fmt.Printf("Total score part one: %d\n", getScore(guideOne))
+	fmt.Printf("Total score part two: %d\n", getScore(guideTwo))
+}
 
-	fmt.Printf("Total score: %d\n", totalScore)
+func getScore(guide []strategy) int {
+	score := 0
+	for _, g := range guide {
+		score += shapeScores[g.you]
+		score += gameResultScores[getOutcome(g.you, g.opponent)]
+	}
+	return score
 }
 
 func getOutcome(you shape, opponent shape) gameResult {

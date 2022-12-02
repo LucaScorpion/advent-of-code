@@ -1,0 +1,2 @@
+Total score part one: 12740
+Total score part two: 11980
