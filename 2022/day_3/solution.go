@@ -8,6 +8,7 @@ import (
 )
 
 type rucksack struct {
+	items          string
 	compartmentOne string
 	compartmentTwo string
 }
@@ -23,6 +24,7 @@ func main() {
 	for _, line := range lines {
 		halfLen := len(line) / 2
 		rucksacks = append(rucksacks, rucksack{
+			items:          line,
 			compartmentOne: line[:halfLen],
 			compartmentTwo: line[halfLen:],
 		})
@@ -44,6 +46,20 @@ func main() {
 	}
 
 	fmt.Printf("Total priority of common items: %d\n", totalPrio)
+
+	badgePrio := 0
+	for i := 0; i < len(rucksacks); i += 3 {
+		rucksack := rucksacks[i]
+		for _, item := range rucksack.items {
+			if i2 := strings.IndexRune(rucksacks[i+1].items, item); i2 > -1 {
+				if i3 := strings.IndexRune(rucksacks[i+2].items, item); i3 > -1 {
+					badgePrio += priority(item)
+					break
+				}
+			}
+		}
+	}
+	fmt.Printf("Total priority of badge items: %d\n", badgePrio)
 }
 
 func priority(item rune) int {
