@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-type rucksack struct {
-	items          string
-	compartmentOne string
-	compartmentTwo string
-}
-
 func main() {
 	stdin := bufio.NewScanner(os.Stdin)
 	lines := make([]string, 0)
@@ -20,20 +14,16 @@ func main() {
 		lines = append(lines, stdin.Text())
 	}
 
-	rucksacks := make([]rucksack, 0)
+	rucksacks := make([]string, 0)
 	for _, line := range lines {
-		halfLen := len(line) / 2
-		rucksacks = append(rucksacks, rucksack{
-			items:          line,
-			compartmentOne: line[:halfLen],
-			compartmentTwo: line[halfLen:],
-		})
+		rucksacks = append(rucksacks, line)
 	}
 
 	commonItems := make([]rune, 0)
 	for _, r := range rucksacks {
-		for _, item := range r.compartmentOne {
-			if strings.ContainsRune(r.compartmentTwo, item) {
+		halfLen := len(r) / 2
+		for _, item := range r[:halfLen] {
+			if strings.ContainsRune(r[halfLen:], item) {
 				commonItems = append(commonItems, item)
 				break
 			}
@@ -50,9 +40,9 @@ func main() {
 	badgePrio := 0
 	for i := 0; i < len(rucksacks); i += 3 {
 		rucksack := rucksacks[i]
-		for _, item := range rucksack.items {
-			if i2 := strings.IndexRune(rucksacks[i+1].items, item); i2 > -1 {
-				if i3 := strings.IndexRune(rucksacks[i+2].items, item); i3 > -1 {
+		for _, item := range rucksack {
+			if i2 := strings.IndexRune(rucksacks[i+1], item); i2 > -1 {
+				if i3 := strings.IndexRune(rucksacks[i+2], item); i3 > -1 {
 					badgePrio += priority(item)
 					break
 				}
