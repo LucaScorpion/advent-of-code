@@ -39,13 +39,19 @@ func main() {
 	}
 
 	fullOverlapCount := 0
+	anyOverlapCount := 0
 	for _, p := range pairs {
 		if hasFullOverlap(p[0], p[1], true) {
 			fullOverlapCount++
 		}
+
+		if hasAnyOverlap(p[0], p[1], true) {
+			anyOverlapCount++
+		}
 	}
 
 	fmt.Printf("Pairs with full overlap: %d\n", fullOverlapCount)
+	fmt.Printf("Pairs with any overlap: %d\n", anyOverlapCount)
 }
 
 func parseInt(str string) int {
@@ -60,6 +66,18 @@ func hasFullOverlap(left section, right section, trySwap bool) bool {
 
 	if trySwap {
 		return hasFullOverlap(right, left, false)
+	}
+
+	return false
+}
+
+func hasAnyOverlap(left section, right section, trySwap bool) bool {
+	if (left.low >= right.low && left.low <= right.high) || (left.high >= right.low && left.high <= right.high) {
+		return true
+	}
+
+	if trySwap {
+		return hasAnyOverlap(right, left, false)
 	}
 
 	return false

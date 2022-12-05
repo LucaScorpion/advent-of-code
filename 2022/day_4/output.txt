@@ -1,0 +1,2 @@
+Pairs with full overlap: 424
+Pairs with any overlap: 804
