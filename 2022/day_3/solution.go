@@ -41,8 +41,8 @@ func main() {
 	for i := 0; i < len(rucksacks); i += 3 {
 		rucksack := rucksacks[i]
 		for _, item := range rucksack {
-			if i2 := strings.IndexRune(rucksacks[i+1], item); i2 > -1 {
-				if i3 := strings.IndexRune(rucksacks[i+2], item); i3 > -1 {
+			if strings.IndexRune(rucksacks[i+1], item) > -1 {
+				if strings.IndexRune(rucksacks[i+2], item) > -1 {
 					badgePrio += priority(item)
 					break
 				}
