@@ -11,19 +11,17 @@ func main() {
 	bytes, _ := io.ReadAll(os.Stdin)
 	input := strings.TrimSpace(string(bytes))
 
-	for i := 4; i < len(input); i++ {
-		if allUnique(input[i-4 : i]) {
-			fmt.Printf("Packet marker position: %d\n", i)
-			break
-		}
-	}
+	fmt.Printf("Packet marker position: %d\n", findMarker(input, 4))
+	fmt.Printf("Message marker position: %d\n", findMarker(input, 14))
+}
 
-	for i := 14; i < len(input); i++ {
-		if allUnique(input[i-14 : i]) {
-			fmt.Printf("Message marker position: %d\n", i)
-			break
+func findMarker(input string, unique int) int {
+	for i := unique; i < len(input); i++ {
+		if allUnique(input[i-unique : i]) {
+			return i
 		}
 	}
+	panic("No marker found!")
 }
 
 func allUnique(str string) bool {
