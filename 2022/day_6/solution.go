@@ -13,7 +13,14 @@ func main() {
 
 	for i := 4; i < len(input); i++ {
 		if allUnique(input[i-4 : i]) {
-			fmt.Printf("Marker position: %d\n", i)
+			fmt.Printf("Packet marker position: %d\n", i)
+			break
+		}
+	}
+
+	for i := 14; i < len(input); i++ {
+		if allUnique(input[i-14 : i]) {
+			fmt.Printf("Message marker position: %d\n", i)
 			break
 		}
 	}
