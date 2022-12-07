@@ -1,0 +1,2 @@
+Sum of small directories: 1477771
+Smallest directory to be removed: 3579501
