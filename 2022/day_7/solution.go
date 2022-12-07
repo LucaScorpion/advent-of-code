@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,10 @@ type entry struct {
 	children  []*entry
 	totalSize int
 }
+
+const smallDirSize = 100000
+const totalDiskSize = 70000000
+const requiredFreeSpace = 30000000
 
 func main() {
 	bytes, _ := io.ReadAll(os.Stdin)
@@ -49,12 +54,31 @@ func main() {
 	calcTotalSize(root)
 
 	fmt.Printf("Sum of small directories: %d\n", sumOfSmallDirs(root))
+
+	toRemove := requiredFreeSpace - (totalDiskSize - root.totalSize)
+	fmt.Printf("Smallest directory to be removed: %d\n", smallestRemovableDir(root, toRemove))
+}
+
+func smallestRemovableDir(root *entry, minRemoveSize int) int {
+	smallest := math.MaxInt32
+
+	if root.totalSize >= minRemoveSize && root.totalSize < smallest {
+		smallest = root.totalSize
+	}
+
+	for _, child := range root.children {
+		if child.isDir {
+			smallest = min(smallest, smallestRemovableDir(child, minRemoveSize))
+		}
+	}
+
+	return smallest
 }
 
 func sumOfSmallDirs(root *entry) int {
 	sum := 0
 
-	if root.isDir && root.totalSize <= 100000 {
+	if root.isDir && root.totalSize <= smallDirSize {
 		sum += root.totalSize
 	}
 
@@ -138,4 +162,11 @@ func newEntry(line string) *entry {
 func parseInt(str string) int {
 	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
 	return int(i)
+}
+
+func min(left, right int) int {
+	if left < right {
+		return left
+	}
+	return right
 }
