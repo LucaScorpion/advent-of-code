@@ -1,0 +1,2 @@
+Total visible trees: 1546
+Best scenic score: 519064
