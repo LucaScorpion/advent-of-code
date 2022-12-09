@@ -36,18 +36,29 @@ func main() {
 		}
 	}
 
-	headPos := position{}
-	tailPos := position{}
-	tailVisited := make(map[position]bool)
-	tailVisited[tailPos] = true
+	knots := make([]position, 10)
+	knotOneVisited := make(map[position]bool)
+	knotOneVisited[knots[1]] = true
+	lastKnotVisited := make(map[position]bool)
+	lastKnotVisited[knots[9]] = true
 
 	for _, step := range steps {
-		headPos = moveDir(headPos, step)
-		tailPos = followHead(tailPos, headPos)
-		tailVisited[tailPos] = true
+		knots[0] = moveDir(knots[0], step)
+
+		for i := 1; i < len(knots); i++ {
+			knots[i] = followHead(knots[i], knots[i-1])
+
+			if i == 1 {
+				knotOneVisited[knots[i]] = true
+			}
+			if i == 9 {
+				lastKnotVisited[knots[i]] = true
+			}
+		}
 	}
 
-	fmt.Printf("Tail visited %d positions.\n", len(tailVisited))
+	fmt.Printf("First knot visited %d positions.\n", len(knotOneVisited))
+	fmt.Printf("Last knot visited %d positions.\n", len(lastKnotVisited))
 }
 
 func parseInt(str string) int {

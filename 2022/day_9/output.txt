@@ -1,0 +1,2 @@
+First knot visited 5883 positions.
+Last knot visited 2367 positions.
