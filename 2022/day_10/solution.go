@@ -17,7 +17,10 @@ type state struct {
 	cycle       int
 	regX        int
 	sigStrength int
+	screenBuf   [][]bool
 }
+
+const screenWidth = 40
 
 func main() {
 	bytes, _ := io.ReadAll(os.Stdin)
@@ -39,12 +42,28 @@ func main() {
 	}
 
 	s := state{
-		cycle: 1,
-		regX:  1,
+		cycle:     1,
+		regX:      1,
+		screenBuf: make([][]bool, 6),
 	}
 	s.run(instructions)
 
-	fmt.Printf("Sum of signal strengths: %d\n", s.sigStrength)
+	fmt.Printf("Sum of signal strengths: %d\n\n", s.sigStrength)
+
+	for _, row := range s.screenBuf {
+		for i, pixel := range row {
+			if i == 0 {
+				continue
+			}
+
+			if pixel {
+				fmt.Print("█")
+			} else {
+				fmt.Print(" ")
+			}
+		}
+		fmt.Println()
+	}
 }
 
 func (s *state) run(instructions []instruction) {
@@ -63,8 +82,19 @@ func (s *state) run(instructions []instruction) {
 }
 
 func (s *state) nextCycle() {
-	if (s.cycle-20)%40 == 0 {
+	if (s.cycle-20)%screenWidth == 0 {
 		s.sigStrength += s.cycle * s.regX
+	}
+
+	row := s.cycle / 40
+	col := s.cycle % 40
+
+	if col >= s.regX && col <= s.regX+2 {
+		if s.screenBuf[row] == nil {
+			s.screenBuf[row] = make([]bool, screenWidth)
+		}
+
+		s.screenBuf[row][col] = true
 	}
 
 	s.cycle++
