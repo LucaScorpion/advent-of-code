@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"strings"
 )
@@ -29,7 +30,7 @@ func main() {
 
 		arg := 0
 		if len(parts) > 1 {
-			arg = utils.ParseInt(parts[1])
+			arg = intMath.ParseInt(parts[1])
 		}
 
 		instructions = append(instructions, instruction{

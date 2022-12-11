@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"sort"
 	"strings"
@@ -26,12 +27,12 @@ func main() {
 		lines := strings.Split(part, "\n")
 
 		m := monkey{
-			items:        utils.ParseInts(strings.Split(lines[1][18:], ", ")),
+			items:        intMath.ParseInts(strings.Split(lines[1][18:], ", ")),
 			operator:     rune(lines[2][23]),
 			rightOperand: lines[2][25:],
-			testDivBy:    utils.ParseInt(lines[3][21:]),
-			testTrue:     utils.ParseInt(lines[4][29:]),
-			testFalse:    utils.ParseInt(lines[5][30:]),
+			testDivBy:    intMath.ParseInt(lines[3][21:]),
+			testTrue:     intMath.ParseInt(lines[4][29:]),
+			testFalse:    intMath.ParseInt(lines[5][30:]),
 		}
 		monkeys = append(monkeys, &m)
 
@@ -93,7 +94,7 @@ func (m *monkey) inspectFirstItem(allDivisors int, reduceWorry bool) (int, int) 
 func applyOperation(item int, operator rune, operand string) int {
 	rightValue := item
 	if operand != "old" {
-		rightValue = utils.ParseInt(operand)
+		rightValue = intMath.ParseInt(operand)
 	}
 
 	result := item

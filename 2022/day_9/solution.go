@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"strings"
 )
@@ -26,7 +27,7 @@ func main() {
 	steps := make([]step, 0)
 	for _, line := range lines {
 		parts := strings.Split(line, " ")
-		repeat := utils.ParseInt(parts[1])
+		repeat := intMath.ParseInt(parts[1])
 
 		for i := 0; i < repeat; i++ {
 			steps = append(steps, step(parts[0][0]))
@@ -91,12 +92,12 @@ func followHead(tail, head position) position {
 		return tail
 	}
 
-	tail.y += utils.ClampUnit(head.y - tail.y)
-	tail.x += utils.ClampUnit(head.x - tail.x)
+	tail.y += intMath.ClampUnit(head.y - tail.y)
+	tail.x += intMath.ClampUnit(head.x - tail.x)
 
 	return tail
 }
 
 func isAdjacent(a, b position) bool {
-	return utils.DiffInt(a.x, b.x) <= 1 && utils.DiffInt(a.y, b.y) <= 1
+	return intMath.Diff(a.x, b.x) <= 1 && intMath.Diff(a.y, b.y) <= 1
 }

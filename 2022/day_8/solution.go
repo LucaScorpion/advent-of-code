@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 )
 
@@ -20,7 +21,7 @@ func main() {
 
 		for x, char := range line {
 			grid[y][x] = &tree{
-				height:  utils.ParseInt(string(char)),
+				height:  intMath.ParseInt(string(char)),
 				visible: false,
 			}
 		}
@@ -78,7 +79,7 @@ func main() {
 	bestScenicScore := 0
 	for y, row := range grid {
 		for x := range row {
-			bestScenicScore = utils.MaxInt(bestScenicScore, scenicScore(grid, x, y))
+			bestScenicScore = intMath.Max(bestScenicScore, scenicScore(grid, x, y))
 		}
 	}
 	fmt.Printf("Best scenic score: %d\n", bestScenicScore)

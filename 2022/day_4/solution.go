@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"strings"
 )
@@ -22,12 +23,12 @@ func main() {
 
 		pairs = append(pairs, [2]section{
 			{
-				low:  utils.ParseInt(leftNums[0]),
-				high: utils.ParseInt(leftNums[1]),
+				low:  intMath.ParseInt(leftNums[0]),
+				high: intMath.ParseInt(leftNums[1]),
 			},
 			{
-				low:  utils.ParseInt(rightNums[0]),
-				high: utils.ParseInt(rightNums[1]),
+				low:  intMath.ParseInt(rightNums[0]),
+				high: intMath.ParseInt(rightNums[1]),
 			},
 		})
 	}

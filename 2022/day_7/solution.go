@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"math"
 	"strings"
@@ -65,7 +66,7 @@ func smallestRemovableDir(root *entry, minRemoveSize int) int {
 
 	for _, child := range root.children {
 		if child.isDir {
-			smallest = utils.MinInt(smallest, smallestRemovableDir(child, minRemoveSize))
+			smallest = intMath.Min(smallest, smallestRemovableDir(child, minRemoveSize))
 		}
 	}
 
@@ -143,7 +144,7 @@ func newEntry(line string) *entry {
 	totalSize := 0
 
 	if !isDir {
-		size = utils.ParseInt(parts[0])
+		size = intMath.ParseInt(parts[0])
 		totalSize = size
 	}
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/intMath"
 	"fmt"
 	"strings"
 )
@@ -20,7 +21,7 @@ func main() {
 
 	startPosLines := strings.Split(inputParts[0], "\n")
 	lastStartPosLine := strings.TrimSpace(startPosLines[len(startPosLines)-1])
-	colCount := utils.ParseInt(lastStartPosLine[len(lastStartPosLine)-1:])
+	colCount := intMath.ParseInt(lastStartPosLine[len(lastStartPosLine)-1:])
 
 	cols := make(columns, colCount)
 	colsTwo := make(columns, colCount)
@@ -42,9 +43,9 @@ func main() {
 	for _, line := range strings.Split(strings.TrimSpace(inputParts[1]), "\n") {
 		parts := strings.Split(line, " ")
 		moves = append(moves, move{
-			amount: utils.ParseInt(parts[1]),
-			from:   utils.ParseInt(parts[3]),
-			to:     utils.ParseInt(parts[5]),
+			amount: intMath.ParseInt(parts[1]),
+			from:   intMath.ParseInt(parts[3]),
+			to:     intMath.ParseInt(parts[5]),
 		})
 	}
 
