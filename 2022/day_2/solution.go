@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"aoc2022/utils"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -56,11 +55,7 @@ var gameResultScores = map[gameResult]int{
 }
 
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	lines := make([]string, 0)
-	for stdin.Scan() {
-		lines = append(lines, stdin.Text())
-	}
+	lines := utils.ReadStdinLines()
 
 	guideOne := make([]strategy, 0)
 	guideTwo := make([]strategy, 0)

@@ -1,9 +1,8 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -23,8 +22,7 @@ type position struct {
 }
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+	lines := utils.ReadStdinLines()
 
 	steps := make([]step, 0)
 	for _, line := range lines {

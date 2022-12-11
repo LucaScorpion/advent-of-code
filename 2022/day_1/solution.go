@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"aoc2022/utils"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
 )
@@ -14,11 +13,7 @@ type bag struct {
 }
 
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	lines := make([]string, 0)
-	for stdin.Scan() {
-		lines = append(lines, stdin.Text())
-	}
+	lines := utils.ReadStdinLines()
 
 	bags := []bag{{
 		calories: make([]int, 0),

@@ -1,18 +1,13 @@
 package main
 
 import (
-	"bufio"
+	"aoc2022/utils"
 	"fmt"
-	"os"
 	"strings"
 )
 
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	lines := make([]string, 0)
-	for stdin.Scan() {
-		lines = append(lines, stdin.Text())
-	}
+	lines := utils.ReadStdinLines()
 
 	rucksacks := make([]string, 0)
 	for _, line := range lines {

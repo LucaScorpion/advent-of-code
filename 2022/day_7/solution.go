@@ -1,10 +1,9 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -22,8 +21,7 @@ const totalDiskSize = 70000000
 const requiredFreeSpace = 30000000
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+	lines := utils.ReadStdinLines()
 
 	root := &entry{
 		isDir:    true,

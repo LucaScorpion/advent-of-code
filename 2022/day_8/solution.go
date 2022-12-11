@@ -1,11 +1,9 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
-	"os"
 	"strconv"
-	"strings"
 )
 
 type tree struct {
@@ -14,8 +12,7 @@ type tree struct {
 }
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	lines := strings.Split(strings.TrimSpace(string(bytes)), "\n")
+	lines := utils.ReadStdinLines()
 
 	grid := make([][]*tree, len(lines))
 

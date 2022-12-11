@@ -1,9 +1,8 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -17,8 +16,7 @@ type move struct {
 }
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	input := string(bytes)
+	input := utils.ReadStdin()
 	inputParts := strings.Split(input, "\n\n")
 
 	startPosLines := strings.Split(inputParts[0], "\n")

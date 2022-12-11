@@ -1,11 +1,9 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
-	"os"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -20,8 +18,7 @@ type monkey struct {
 }
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	monkeyParts := strings.Split(strings.TrimSpace(string(bytes)), "\n\n")
+	monkeyParts := utils.ReadStdinBlocks()
 
 	monkeys := make([]*monkey, 0)
 	monkeysAgain := make([]*monkey, 0)
@@ -29,12 +26,12 @@ func main() {
 		lines := strings.Split(part, "\n")
 
 		m := monkey{
-			items:        parseInts(strings.Split(lines[1][18:], ", ")),
+			items:        utils.ParseInts(strings.Split(lines[1][18:], ", ")),
 			operator:     rune(lines[2][23]),
 			rightOperand: lines[2][25:],
-			testDivBy:    parseInt(lines[3][21:]),
-			testTrue:     parseInt(lines[4][29:]),
-			testFalse:    parseInt(lines[5][30:]),
+			testDivBy:    utils.ParseInt(lines[3][21:]),
+			testTrue:     utils.ParseInt(lines[4][29:]),
+			testFalse:    utils.ParseInt(lines[5][30:]),
 		}
 		monkeys = append(monkeys, &m)
 
@@ -96,7 +93,7 @@ func (m *monkey) inspectFirstItem(allDivisors int, reduceWorry bool) (int, int) 
 func applyOperation(item int, operator rune, operand string) int {
 	rightValue := item
 	if operand != "old" {
-		rightValue = parseInt(operand)
+		rightValue = utils.ParseInt(operand)
 	}
 
 	result := item
@@ -109,18 +106,5 @@ func applyOperation(item int, operator rune, operand string) int {
 		panic("Unknown operator")
 	}
 
-	return result
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
-}
-
-func parseInts(parts []string) []int {
-	result := make([]int, len(parts))
-	for i, part := range parts {
-		result[i] = parseInt(part)
-	}
 	return result
 }

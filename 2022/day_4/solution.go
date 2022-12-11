@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"aoc2022/utils"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -14,11 +13,7 @@ type section struct {
 }
 
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	lines := make([]string, 0)
-	for stdin.Scan() {
-		lines = append(lines, stdin.Text())
-	}
+	lines := utils.ReadStdinLines()
 
 	pairs := make([][2]section, 0)
 	for _, line := range lines {

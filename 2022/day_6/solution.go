@@ -1,15 +1,13 @@
 package main
 
 import (
+	"aoc2022/utils"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 )
 
 func main() {
-	bytes, _ := io.ReadAll(os.Stdin)
-	input := strings.TrimSpace(string(bytes))
+	input := utils.ReadStdinTrimmed()
 
 	fmt.Printf("Packet marker position: %d\n", findMarker(input, 4))
 	fmt.Printf("Message marker position: %d\n", findMarker(input, 14))
