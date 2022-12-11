@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2022/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -30,7 +29,7 @@ func main() {
 
 		arg := 0
 		if len(parts) > 1 {
-			arg = parseInt(parts[1])
+			arg = utils.ParseInt(parts[1])
 		}
 
 		instructions = append(instructions, instruction{
@@ -96,9 +95,4 @@ func (s *state) nextCycle() {
 	}
 
 	s.cycle++
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
 }

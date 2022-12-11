@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2022/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -23,12 +22,12 @@ func main() {
 
 		pairs = append(pairs, [2]section{
 			{
-				low:  parseInt(leftNums[0]),
-				high: parseInt(leftNums[1]),
+				low:  utils.ParseInt(leftNums[0]),
+				high: utils.ParseInt(leftNums[1]),
 			},
 			{
-				low:  parseInt(rightNums[0]),
-				high: parseInt(rightNums[1]),
+				low:  utils.ParseInt(rightNums[0]),
+				high: utils.ParseInt(rightNums[1]),
 			},
 		})
 	}
@@ -47,11 +46,6 @@ func main() {
 
 	fmt.Printf("Pairs with full overlap: %d\n", fullOverlapCount)
 	fmt.Printf("Pairs with any overlap: %d\n", anyOverlapCount)
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
 }
 
 func hasFullOverlap(left section, right section, trySwap bool) bool {

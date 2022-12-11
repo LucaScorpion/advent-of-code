@@ -4,7 +4,6 @@ import (
 	"aoc2022/utils"
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 )
 
@@ -66,7 +65,7 @@ func smallestRemovableDir(root *entry, minRemoveSize int) int {
 
 	for _, child := range root.children {
 		if child.isDir {
-			smallest = min(smallest, smallestRemovableDir(child, minRemoveSize))
+			smallest = utils.MinInt(smallest, smallestRemovableDir(child, minRemoveSize))
 		}
 	}
 
@@ -144,7 +143,7 @@ func newEntry(line string) *entry {
 	totalSize := 0
 
 	if !isDir {
-		size = parseInt(parts[0])
+		size = utils.ParseInt(parts[0])
 		totalSize = size
 	}
 
@@ -155,16 +154,4 @@ func newEntry(line string) *entry {
 		children:  make([]*entry, 0),
 		totalSize: totalSize,
 	}
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
-}
-
-func min(left, right int) int {
-	if left < right {
-		return left
-	}
-	return right
 }

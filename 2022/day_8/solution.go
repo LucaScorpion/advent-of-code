@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2022/utils"
 	"fmt"
-	"strconv"
 )
 
 type tree struct {
@@ -21,7 +20,7 @@ func main() {
 
 		for x, char := range line {
 			grid[y][x] = &tree{
-				height:  parseInt(string(char)),
+				height:  utils.ParseInt(string(char)),
 				visible: false,
 			}
 		}
@@ -79,22 +78,10 @@ func main() {
 	bestScenicScore := 0
 	for y, row := range grid {
 		for x := range row {
-			bestScenicScore = max(bestScenicScore, scenicScore(grid, x, y))
+			bestScenicScore = utils.MaxInt(bestScenicScore, scenicScore(grid, x, y))
 		}
 	}
 	fmt.Printf("Best scenic score: %d\n", bestScenicScore)
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
-}
-
-func max(left, right int) int {
-	if left > right {
-		return left
-	}
-	return right
 }
 
 func scenicScore(grid [][]*tree, startX, startY int) int {

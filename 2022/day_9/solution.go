@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2022/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -27,7 +26,7 @@ func main() {
 	steps := make([]step, 0)
 	for _, line := range lines {
 		parts := strings.Split(line, " ")
-		repeat := parseInt(parts[1])
+		repeat := utils.ParseInt(parts[1])
 
 		for i := 0; i < repeat; i++ {
 			steps = append(steps, step(parts[0][0]))
@@ -57,11 +56,6 @@ func main() {
 
 	fmt.Printf("First knot visited %d positions.\n", len(knotOneVisited))
 	fmt.Printf("Last knot visited %d positions.\n", len(lastKnotVisited))
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
 }
 
 func moveDir(pos position, dir step) position {
@@ -97,33 +91,12 @@ func followHead(tail, head position) position {
 		return tail
 	}
 
-	tail.y += clampUnit(head.y - tail.y)
-	tail.x += clampUnit(head.x - tail.x)
+	tail.y += utils.ClampUnit(head.y - tail.y)
+	tail.x += utils.ClampUnit(head.x - tail.x)
 
 	return tail
 }
 
 func isAdjacent(a, b position) bool {
-	return diff(a.x, b.x) <= 1 && diff(a.y, b.y) <= 1
-}
-
-func diff(a, b int) int {
-	return abs(a - b)
-}
-
-func abs(v int) int {
-	if v < 0 {
-		return -v
-	}
-	return v
-}
-
-func clampUnit(v int) int {
-	if v > 1 {
-		return 1
-	}
-	if v < -1 {
-		return -1
-	}
-	return v
+	return utils.DiffInt(a.x, b.x) <= 1 && utils.DiffInt(a.y, b.y) <= 1
 }

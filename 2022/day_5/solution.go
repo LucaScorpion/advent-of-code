@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2022/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -21,7 +20,7 @@ func main() {
 
 	startPosLines := strings.Split(inputParts[0], "\n")
 	lastStartPosLine := strings.TrimSpace(startPosLines[len(startPosLines)-1])
-	colCount := parseInt(lastStartPosLine[len(lastStartPosLine)-1:])
+	colCount := utils.ParseInt(lastStartPosLine[len(lastStartPosLine)-1:])
 
 	cols := make(columns, colCount)
 	colsTwo := make(columns, colCount)
@@ -43,9 +42,9 @@ func main() {
 	for _, line := range strings.Split(strings.TrimSpace(inputParts[1]), "\n") {
 		parts := strings.Split(line, " ")
 		moves = append(moves, move{
-			amount: parseInt(parts[1]),
-			from:   parseInt(parts[3]),
-			to:     parseInt(parts[5]),
+			amount: utils.ParseInt(parts[1]),
+			from:   utils.ParseInt(parts[3]),
+			to:     utils.ParseInt(parts[5]),
 		})
 	}
 
@@ -65,11 +64,6 @@ func main() {
 		fmt.Print(string(col[len(col)-1]))
 	}
 	fmt.Println()
-}
-
-func parseInt(str string) int {
-	i, _ := strconv.ParseInt(str, 10, strconv.IntSize)
-	return int(i)
 }
 
 func moveBlockOneByOne(cols columns, amount, from, to int) columns {
