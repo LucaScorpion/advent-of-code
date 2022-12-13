@@ -1,0 +1,2 @@
+Shortest path to top: 339
+Shortest possible hike: 332
