@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"container/list"
 	"fmt"
 )
 
@@ -50,55 +51,58 @@ func main() {
 		}
 	}
 
-	paths := make(map[position]path)
-	findPath(grid, goalPos, startPos, startPos, make(path, 0), paths)
-	fmt.Printf("Shortest path: %d\n", len(paths[goalPos]))
-	//for _, s := range paths[goalPos] {
-	//	fmt.Print(string(s))
-	//}
-	//fmt.Println()
+	seen := make(map[position]bool)
+	queue := list.New()
+	queue.PushBack(startPos)
+	dist := make(map[position]int)
+	dist[startPos] = 0
+
+	step := 0
+	for {
+		front := queue.Front()
+		queue.Remove(front)
+		cur := front.Value.(position)
+
+		if cur == goalPos {
+			break
+		}
+
+		step++
+		curHeight := grid[cur.y][cur.x]
+
+		for _, next := range nextSteps(cur) {
+			if !seen[next] && inBounds(next, grid) && grid[next.y][next.x] <= curHeight+1 {
+				seen[next] = true
+				queue.PushBack(next)
+				dist[next] = dist[cur] + 1
+			}
+		}
+	}
+
+	fmt.Printf("Shortest path: %d\n", dist[goalPos])
 }
 
-func findPath(grid [][]int, goalPos, prev, cur position, curPath path, paths map[position]path) {
-	// Check if we are out of bounds.
-	if cur.y < 0 || cur.y >= len(grid) || cur.x < 0 || cur.x >= len(grid[cur.y]) {
-		return
+func nextSteps(cur position) []position {
+	return []position{
+		{
+			x: cur.x + 1,
+			y: cur.y,
+		},
+		{
+			x: cur.x - 1,
+			y: cur.y,
+		},
+		{
+			x: cur.x,
+			y: cur.y + 1,
+		},
+		{
+			x: cur.x,
+			y: cur.y - 1,
+		},
 	}
+}
 
-	// Check if we climbed too high.
-	prevHeight := grid[prev.y][prev.x]
-	curHeight := grid[cur.y][cur.x]
-	if curHeight > prevHeight+1 {
-		return
-	}
-
-	checkPath, pathExists := paths[cur]
-
-	// Check if there is already a shorter path here.
-	if pathExists && len(checkPath) < len(curPath) {
-		return
-	}
-
-	// Save the current path.
-	paths[cur] = curPath
-
-	// Check if we are at the goal.
-	if cur.x == goalPos.x && cur.y == goalPos.y {
-		return
-	}
-
-	next := cur
-
-	next.x++
-	findPath(grid, goalPos, cur, next, append(curPath, RIGHT), paths)
-
-	next.x -= 2
-	findPath(grid, goalPos, cur, next, append(curPath, LEFT), paths)
-
-	next.x++
-	next.y++
-	findPath(grid, goalPos, cur, next, append(curPath, DOWN), paths)
-
-	next.y -= 2
-	findPath(grid, goalPos, cur, next, append(curPath, UP), paths)
+func inBounds(pos position, grid [][]int) bool {
+	return pos.x >= 0 && pos.y >= 0 && pos.y < len(grid) && pos.x < len(grid[pos.y])
 }
