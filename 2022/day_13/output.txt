@@ -1,0 +1,2 @@
+Sum of indices of ordered pairs: 5852
+Decoder key: 24190

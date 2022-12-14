@@ -5,6 +5,7 @@ import (
 	"aoc2022/utils/intMath"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -19,26 +20,60 @@ const (
 func main() {
 	blocks := utils.ReadStdinBlocks()
 
-	pairs := make([][2]any, len(blocks))
-	for i, block := range blocks {
+	packets := make([]any, 0)
+	for _, block := range blocks {
 		rawPair := strings.Split(block, "\n")
-		var left any
-		var right any
-		json.NewDecoder(strings.NewReader(rawPair[0]))
 
+		var left any
 		json.Unmarshal([]byte(rawPair[0]), &left)
+		packets = append(packets, left)
+
+		var right any
 		json.Unmarshal([]byte(rawPair[1]), &right)
-		pairs[i] = [2]any{left, right}
+		packets = append(packets, right)
 	}
 
 	sum := 0
-	for i, pair := range pairs {
-		if isCorrect(pair[0], pair[1]) {
-			sum += i + 1
+	for i := 0; i < len(packets); i += 2 {
+		if isCorrect(packets[i], packets[i+1]) {
+			sum += i/2 + 1
 		}
 	}
+	fmt.Printf("Sum of indices of ordered pairs: %d\n", sum)
 
-	fmt.Printf("Sum of indices: %d\n", sum)
+	packets = append(packets, divPacket(2))
+	packets = append(packets, divPacket(6))
+
+	sort.Slice(packets, func(i, j int) bool {
+		return isCorrect(packets[i], packets[j])
+	})
+
+	divTwo := 0
+	divSix := 0
+	for i, packet := range packets {
+		if isDivPacket(packet, 2) {
+			divTwo = i + 1
+		}
+		if isDivPacket(packet, 6) {
+			divSix = i + 1
+		}
+	}
+	fmt.Printf("Decoder key: %d\n", divTwo*divSix)
+}
+
+func divPacket(num float64) any {
+	return []any{[]any{num}}
+}
+
+func isDivPacket(packet any, num float64) bool {
+	if outer, ok := packet.([]any); ok && len(outer) == 1 {
+		if inner, ok := outer[0].([]any); ok && len(inner) == 1 {
+			if val, ok := inner[0].(float64); ok {
+				return val == num
+			}
+		}
+	}
+	return false
 }
 
 func isCorrect(left, right any) bool {
