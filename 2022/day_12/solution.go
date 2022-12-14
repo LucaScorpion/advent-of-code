@@ -6,16 +6,11 @@ import (
 	"fmt"
 )
 
-type position struct {
-	x int
-	y int
-}
-
 func main() {
 	lines := utils.ReadStdinLines()
 	grid := make([][]int, len(lines))
-	var startPos position
-	var goalPos position
+	var startPos utils.Position
+	var goalPos utils.Position
 
 	for y, line := range lines {
 		grid[y] = make([]int, len(line))
@@ -23,16 +18,16 @@ func main() {
 		for x, char := range line {
 			if char == 'S' {
 				char = 'a'
-				startPos = position{
-					x: x,
-					y: y,
+				startPos = utils.Position{
+					X: x,
+					Y: y,
 				}
 			}
 			if char == 'E' {
 				char = 'z'
-				goalPos = position{
-					x: x,
-					y: y,
+				goalPos = utils.Position{
+					X: x,
+					Y: y,
 				}
 			}
 
@@ -44,27 +39,27 @@ func main() {
 	partTwo(grid, goalPos)
 }
 
-func partOne(grid [][]int, startPos, goalPos position) {
-	seen := make(map[position]bool)
+func partOne(grid [][]int, startPos, goalPos utils.Position) {
+	seen := make(map[utils.Position]bool)
 	seen[startPos] = true
 	queue := list.New()
 	queue.PushBack(startPos)
-	dist := make(map[position]int)
+	dist := make(map[utils.Position]int)
 	dist[startPos] = 0
 
 	for {
 		front := queue.Front()
 		queue.Remove(front)
-		cur := front.Value.(position)
+		cur := front.Value.(utils.Position)
 
 		if cur == goalPos {
 			break
 		}
 
-		curHeight := grid[cur.y][cur.x]
+		curHeight := grid[cur.Y][cur.X]
 
 		for _, next := range nextSteps(cur) {
-			if !seen[next] && inBounds(next, grid) && grid[next.y][next.x] <= curHeight+1 {
+			if !seen[next] && inBounds(next, grid) && grid[next.Y][next.X] <= curHeight+1 {
 				seen[next] = true
 				queue.PushBack(next)
 				dist[next] = dist[cur] + 1
@@ -75,21 +70,21 @@ func partOne(grid [][]int, startPos, goalPos position) {
 	fmt.Printf("Shortest path to top: %d\n", dist[goalPos])
 }
 
-func partTwo(grid [][]int, goalPos position) {
-	seen := make(map[position]bool)
+func partTwo(grid [][]int, goalPos utils.Position) {
+	seen := make(map[utils.Position]bool)
 	seen[goalPos] = true
 	queue := list.New()
 	queue.PushBack(goalPos)
-	dist := make(map[position]int)
+	dist := make(map[utils.Position]int)
 	dist[goalPos] = 0
-	var foundPos position
+	var foundPos utils.Position
 
 	for {
 		front := queue.Front()
 		queue.Remove(front)
-		cur := front.Value.(position)
+		cur := front.Value.(utils.Position)
 
-		curHeight := grid[cur.y][cur.x]
+		curHeight := grid[cur.Y][cur.X]
 
 		if curHeight == 0 {
 			foundPos = cur
@@ -97,7 +92,7 @@ func partTwo(grid [][]int, goalPos position) {
 		}
 
 		for _, next := range nextSteps(cur) {
-			if !seen[next] && inBounds(next, grid) && grid[next.y][next.x] >= curHeight-1 {
+			if !seen[next] && inBounds(next, grid) && grid[next.Y][next.X] >= curHeight-1 {
 				seen[next] = true
 				queue.PushBack(next)
 				dist[next] = dist[cur] + 1
@@ -108,27 +103,27 @@ func partTwo(grid [][]int, goalPos position) {
 	fmt.Printf("Shortest possible hike: %d\n", dist[foundPos])
 }
 
-func nextSteps(cur position) []position {
-	return []position{
+func nextSteps(cur utils.Position) []utils.Position {
+	return []utils.Position{
 		{
-			x: cur.x + 1,
-			y: cur.y,
+			X: cur.X + 1,
+			Y: cur.Y,
 		},
 		{
-			x: cur.x - 1,
-			y: cur.y,
+			X: cur.X - 1,
+			Y: cur.Y,
 		},
 		{
-			x: cur.x,
-			y: cur.y + 1,
+			X: cur.X,
+			Y: cur.Y + 1,
 		},
 		{
-			x: cur.x,
-			y: cur.y - 1,
+			X: cur.X,
+			Y: cur.Y - 1,
 		},
 	}
 }
 
-func inBounds(pos position, grid [][]int) bool {
-	return pos.x >= 0 && pos.y >= 0 && pos.y < len(grid) && pos.x < len(grid[pos.y])
+func inBounds(pos utils.Position, grid [][]int) bool {
+	return pos.X >= 0 && pos.Y >= 0 && pos.Y < len(grid) && pos.X < len(grid[pos.Y])
 }

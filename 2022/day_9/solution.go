@@ -16,11 +16,6 @@ const (
 	RIGHT step = 'R'
 )
 
-type position struct {
-	x int
-	y int
-}
-
 func main() {
 	lines := utils.ReadStdinLines()
 
@@ -34,10 +29,10 @@ func main() {
 		}
 	}
 
-	knots := make([]position, 10)
-	knotOneVisited := make(map[position]bool)
+	knots := make([]utils.Position, 10)
+	knotOneVisited := make(map[utils.Position]bool)
 	knotOneVisited[knots[1]] = true
-	lastKnotVisited := make(map[position]bool)
+	lastKnotVisited := make(map[utils.Position]bool)
 	lastKnotVisited[knots[9]] = true
 
 	for _, step := range steps {
@@ -59,45 +54,45 @@ func main() {
 	fmt.Printf("Last knot visited %d positions.\n", len(lastKnotVisited))
 }
 
-func moveDir(pos position, dir step) position {
+func moveDir(pos utils.Position, dir step) utils.Position {
 	if dir == UP {
-		return position{
-			x: pos.x,
-			y: pos.y + 1,
+		return utils.Position{
+			X: pos.X,
+			Y: pos.Y + 1,
 		}
 	}
 	if dir == DOWN {
-		return position{
-			x: pos.x,
-			y: pos.y - 1,
+		return utils.Position{
+			X: pos.X,
+			Y: pos.Y - 1,
 		}
 	}
 	if dir == LEFT {
-		return position{
-			x: pos.x - 1,
-			y: pos.y,
+		return utils.Position{
+			X: pos.X - 1,
+			Y: pos.Y,
 		}
 	}
 	if dir == RIGHT {
-		return position{
-			x: pos.x + 1,
-			y: pos.y,
+		return utils.Position{
+			X: pos.X + 1,
+			Y: pos.Y,
 		}
 	}
 	panic("Unknown direction.")
 }
 
-func followHead(tail, head position) position {
+func followHead(tail, head utils.Position) utils.Position {
 	if isAdjacent(tail, head) {
 		return tail
 	}
 
-	tail.y += intMath.ClampUnit(head.y - tail.y)
-	tail.x += intMath.ClampUnit(head.x - tail.x)
+	tail.Y += intMath.ClampUnit(head.Y - tail.Y)
+	tail.X += intMath.ClampUnit(head.X - tail.X)
 
 	return tail
 }
 
-func isAdjacent(a, b position) bool {
-	return intMath.Diff(a.x, b.x) <= 1 && intMath.Diff(a.y, b.y) <= 1
+func isAdjacent(a, b utils.Position) bool {
+	return intMath.Diff(a.X, b.X) <= 1 && intMath.Diff(a.Y, b.Y) <= 1
 }
