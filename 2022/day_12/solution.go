@@ -11,17 +11,6 @@ type position struct {
 	y int
 }
 
-type direction rune
-
-const (
-	UP    direction = '^'
-	DOWN  direction = 'v'
-	LEFT  direction = '<'
-	RIGHT direction = '>'
-)
-
-type path []direction
-
 func main() {
 	lines := utils.ReadStdinLines()
 	grid := make([][]int, len(lines))
