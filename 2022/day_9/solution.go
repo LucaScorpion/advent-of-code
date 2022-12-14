@@ -3,6 +3,7 @@ package main
 import (
 	"aoc2022/utils"
 	"aoc2022/utils/intMath"
+	"aoc2022/utils/position"
 	"fmt"
 	"strings"
 )
@@ -29,10 +30,10 @@ func main() {
 		}
 	}
 
-	knots := make([]utils.Position, 10)
-	knotOneVisited := make(map[utils.Position]bool)
+	knots := make([]position.Position, 10)
+	knotOneVisited := make(map[position.Position]bool)
 	knotOneVisited[knots[1]] = true
-	lastKnotVisited := make(map[utils.Position]bool)
+	lastKnotVisited := make(map[position.Position]bool)
 	lastKnotVisited[knots[9]] = true
 
 	for _, step := range steps {
@@ -54,27 +55,27 @@ func main() {
 	fmt.Printf("Last knot visited %d positions.\n", len(lastKnotVisited))
 }
 
-func moveDir(pos utils.Position, dir step) utils.Position {
+func moveDir(pos position.Position, dir step) position.Position {
 	if dir == UP {
-		return utils.Position{
+		return position.Position{
 			X: pos.X,
 			Y: pos.Y + 1,
 		}
 	}
 	if dir == DOWN {
-		return utils.Position{
+		return position.Position{
 			X: pos.X,
 			Y: pos.Y - 1,
 		}
 	}
 	if dir == LEFT {
-		return utils.Position{
+		return position.Position{
 			X: pos.X - 1,
 			Y: pos.Y,
 		}
 	}
 	if dir == RIGHT {
-		return utils.Position{
+		return position.Position{
 			X: pos.X + 1,
 			Y: pos.Y,
 		}
@@ -82,7 +83,7 @@ func moveDir(pos utils.Position, dir step) utils.Position {
 	panic("Unknown direction.")
 }
 
-func followHead(tail, head utils.Position) utils.Position {
+func followHead(tail, head position.Position) position.Position {
 	if isAdjacent(tail, head) {
 		return tail
 	}
@@ -93,6 +94,6 @@ func followHead(tail, head utils.Position) utils.Position {
 	return tail
 }
 
-func isAdjacent(a, b utils.Position) bool {
+func isAdjacent(a, b position.Position) bool {
 	return intMath.Diff(a.X, b.X) <= 1 && intMath.Diff(a.Y, b.Y) <= 1
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc2022/utils"
+	"aoc2022/utils/position"
 	"container/list"
 	"fmt"
 )
@@ -9,8 +10,8 @@ import (
 func main() {
 	lines := utils.ReadStdinLines()
 	grid := make([][]int, len(lines))
-	var startPos utils.Position
-	var goalPos utils.Position
+	var startPos position.Position
+	var goalPos position.Position
 
 	for y, line := range lines {
 		grid[y] = make([]int, len(line))
@@ -18,14 +19,14 @@ func main() {
 		for x, char := range line {
 			if char == 'S' {
 				char = 'a'
-				startPos = utils.Position{
+				startPos = position.Position{
 					X: x,
 					Y: y,
 				}
 			}
 			if char == 'E' {
 				char = 'z'
-				goalPos = utils.Position{
+				goalPos = position.Position{
 					X: x,
 					Y: y,
 				}
@@ -39,18 +40,18 @@ func main() {
 	partTwo(grid, goalPos)
 }
 
-func partOne(grid [][]int, startPos, goalPos utils.Position) {
-	seen := make(map[utils.Position]bool)
+func partOne(grid [][]int, startPos, goalPos position.Position) {
+	seen := make(map[position.Position]bool)
 	seen[startPos] = true
 	queue := list.New()
 	queue.PushBack(startPos)
-	dist := make(map[utils.Position]int)
+	dist := make(map[position.Position]int)
 	dist[startPos] = 0
 
 	for {
 		front := queue.Front()
 		queue.Remove(front)
-		cur := front.Value.(utils.Position)
+		cur := front.Value.(position.Position)
 
 		if cur == goalPos {
 			break
@@ -70,19 +71,19 @@ func partOne(grid [][]int, startPos, goalPos utils.Position) {
 	fmt.Printf("Shortest path to top: %d\n", dist[goalPos])
 }
 
-func partTwo(grid [][]int, goalPos utils.Position) {
-	seen := make(map[utils.Position]bool)
+func partTwo(grid [][]int, goalPos position.Position) {
+	seen := make(map[position.Position]bool)
 	seen[goalPos] = true
 	queue := list.New()
 	queue.PushBack(goalPos)
-	dist := make(map[utils.Position]int)
+	dist := make(map[position.Position]int)
 	dist[goalPos] = 0
-	var foundPos utils.Position
+	var foundPos position.Position
 
 	for {
 		front := queue.Front()
 		queue.Remove(front)
-		cur := front.Value.(utils.Position)
+		cur := front.Value.(position.Position)
 
 		curHeight := grid[cur.Y][cur.X]
 
@@ -103,8 +104,8 @@ func partTwo(grid [][]int, goalPos utils.Position) {
 	fmt.Printf("Shortest possible hike: %d\n", dist[foundPos])
 }
 
-func nextSteps(cur utils.Position) []utils.Position {
-	return []utils.Position{
+func nextSteps(cur position.Position) []position.Position {
+	return []position.Position{
 		{
 			X: cur.X + 1,
 			Y: cur.Y,
@@ -124,6 +125,6 @@ func nextSteps(cur utils.Position) []utils.Position {
 	}
 }
 
-func inBounds(pos utils.Position, grid [][]int) bool {
+func inBounds(pos position.Position, grid [][]int) bool {
 	return pos.X >= 0 && pos.Y >= 0 && pos.Y < len(grid) && pos.X < len(grid[pos.Y])
 }
