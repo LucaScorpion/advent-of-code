@@ -63,11 +63,28 @@ func main() {
 		}
 	}
 
-	sandUnits := 0
-	for ; !dropSand(cells, abyssY); sandUnits++ {
+	cellsWithFloor := make(grid)
+	for k, v := range cells {
+		cellsWithFloor[k] = v
 	}
 
-	fmt.Printf("Units of sand: %d\n", sandUnits)
+	sandUnitsAbyss := 0
+	for ; !dropSand(cells, abyssY); sandUnitsAbyss++ {
+	}
+	fmt.Printf("Units of sand with abyss: %d\n", sandUnitsAbyss)
+
+	floorY := abyssY + 2
+	for x := sandSpawn.X - floorY - 1; x <= sandSpawn.X+floorY+1; x++ {
+		cellsWithFloor[position.Position{
+			X: x,
+			Y: floorY,
+		}] = ROCK
+	}
+
+	sandUnitsFloor := 0
+	for ; !dropSand(cellsWithFloor, floorY); sandUnitsFloor++ {
+	}
+	fmt.Printf("Units of sand with floor: %d\n", sandUnitsFloor+1)
 }
 
 func dropSand(cells grid, abyssY int) bool {
@@ -75,6 +92,11 @@ func dropSand(cells grid, abyssY int) bool {
 
 	for {
 		nextPos := step(cells, sandPos)
+
+		if nextPos == sandSpawn {
+			cells[nextPos] = SAND
+			return true
+		}
 
 		if nextPos == sandPos {
 			cells[nextPos] = SAND
