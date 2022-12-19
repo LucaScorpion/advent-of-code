@@ -24,3 +24,7 @@ func Add(left, right Position) Position {
 		Y: left.Y + right.Y,
 	}
 }
+
+func ManhattanDist(left, right Position) int {
+	return intMath.Diff(left.X, right.X) + intMath.Diff(left.Y, right.Y)
+}

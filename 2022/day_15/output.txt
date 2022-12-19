@@ -1,0 +1,1 @@
+Positions where a beacon cannot be present: 4793062
