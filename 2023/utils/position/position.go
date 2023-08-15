@@ -46,5 +46,5 @@ func ManhattanDist(left, right Position) int {
 
 func DistCeil(left, right Position) int {
 	pos := Sub(right, left)
-	return int(math.Ceil(math.Sqrt(math.Pow(float64(pos.X), 2) + math.Pow(float64(pos.Y), 2))))
+	return int(math.Ceil(math.Abs(math.Sqrt(math.Pow(float64(pos.X), 2) + math.Pow(float64(pos.Y), 2)))))
 }

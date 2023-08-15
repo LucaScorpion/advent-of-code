@@ -17,7 +17,7 @@ func main() {
 		packs[i] = parsePack(line)
 	}
 
-	total := 0
+	radiiOriginSum := 0
 	for _, pack := range packs {
 		radius := 0
 
@@ -28,10 +28,15 @@ func main() {
 			}
 		}
 
-		total += radius
+		radiiOriginSum += radius
 	}
+	fmt.Printf("Sum of radii from (0,0): %v\n", radiiOriginSum)
 
-	fmt.Printf("Sum of radii: %v\n", total)
+	radiiSum := 0
+	//for _, pack := range packs {
+	// TODO
+	//}
+	fmt.Printf("Sum of optimal radii: %v\n", radiiSum)
 }
 
 func parsePack(line string) pack {
