@@ -1,0 +1,2 @@
+Sum of ids: 2541
+Sum of powers: 66016
