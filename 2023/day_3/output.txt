@@ -1,0 +1,2 @@
+Sum of symbol-adjacent parts: 522726
+Sum of gear ratios: 81721933
