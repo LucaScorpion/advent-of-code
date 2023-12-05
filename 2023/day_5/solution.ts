@@ -53,4 +53,39 @@ function mapSrcDest(src: Category, dest: Category, srcVal: number): number {
 }
 
 const lowestLocation = Math.min(...seeds.map((s) => mapSrcDest('seed', 'location', s)));
-console.log(`Lowest location: ${lowestLocation}`);
+console.log(`Lowest location for single seeds: ${lowestLocation}`);
+
+function mapDestSrc(dest: Category, src: Category, destVal: number): number {
+  const m = maps.find((m) => m.dest === dest);
+  if (!m) {
+    throw new Error(`Could not find map from ${dest}`);
+  }
+
+  let srcVal = destVal;
+
+  m.ranges.forEach((range) => {
+    if (destVal >= range.destRangeStart && destVal < range.destRangeStart + range.rangeLength) {
+      srcVal = range.srcRangeStart + (destVal - range.destRangeStart);
+    }
+  });
+
+  return m.src === src ? srcVal : mapDestSrc(m.src, src, srcVal);
+}
+
+function isValidSeed(val: number) {
+  for (let i = 0; i < seeds.length; i += 2) {
+    if (val >= seeds[i] && val < seeds[i] + seeds[i + 1]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+for (let i = 0; true; i++) {
+  const seed = mapDestSrc('location', 'seed', i);
+
+  if (isValidSeed(seed)) {
+    console.log(`Lowest location for ranges: ${i}`);
+    break;
+  }
+}
