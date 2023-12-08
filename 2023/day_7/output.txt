@@ -1,0 +1,2 @@
+Total winnings without joker: 248836197
+Total winnings with joker: 251195607

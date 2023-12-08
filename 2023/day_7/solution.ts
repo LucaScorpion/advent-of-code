@@ -7,7 +7,8 @@ const handsWithBid: [string, number][] = lines.map((l) => {
   return [hand, parseInt(bidStr)];
 });
 
-const cards = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+const CARD_ORDER = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+const CARD_ORDER_WITH_JOKER = ['A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J'];
 
 enum HandType {
   HighCard,
@@ -19,7 +20,7 @@ enum HandType {
   FiveKind
 }
 
-function getHandType(hand: string): HandType {
+function getCardCounts(hand: string): [string, number][] {
   const cardCounts: [string, number][] = [];
   hand.split('').forEach((card) => {
     const entry = cardCounts.find((e) => e[0] === card);
@@ -29,8 +30,11 @@ function getHandType(hand: string): HandType {
       cardCounts.push([card, 1]);
     }
   });
-  cardCounts.sort((a, b) => b[1] - a[1]);
+  return cardCounts.sort((a, b) => b[1] - a[1]);
+}
 
+function getHandType(hand: string): HandType {
+  const cardCounts = getCardCounts(hand);
   switch (cardCounts.length) {
     case 5:
       return HandType.HighCard;
@@ -47,15 +51,25 @@ function getHandType(hand: string): HandType {
   }
 }
 
-function compareHands(a: string, b: string) {
-  const aType = getHandType(a);
-  const bType = getHandType(b);
+function getHandTypeWithJoker(hand: string): HandType {
+  const handWithoutJokers = hand.replaceAll('J', '');
+  if (handWithoutJokers.length === 0) {
+    return HandType.FiveKind;
+  }
+
+  const cardCounts = getCardCounts(handWithoutJokers);
+  return getHandType(hand.replaceAll('J', cardCounts[0][0]));
+}
+
+function compareHands(a: string, b: string, handTypeFn: (hand: string) => HandType, cardOrder: string[]) {
+  const aType = handTypeFn(a);
+  const bType = handTypeFn(b);
   if (aType !== bType) {
     return bType - aType;
   }
 
   for (let i = 0; i < a.length; i++) {
-    const highCardCompare = compareCards(a[i], b[i]);
+    const highCardCompare = cardOrder.indexOf(a[i]) - cardOrder.indexOf(b[i]);
     if (highCardCompare !== 0) {
       return highCardCompare;
     }
@@ -64,16 +78,17 @@ function compareHands(a: string, b: string) {
   throw new Error(`Could not compare hands: ${a} - ${b}`);
 }
 
-function compareCards(a: string, b: string) {
-  return cards.indexOf(a) - cards.indexOf(b);
-}
-
 // Sorted weak to strong.
-const sortedHands = handsWithBid.toSorted((a, b) => compareHands(b[0], a[0]));
-
-let totalWinnings = 0;
+const sortedHands = handsWithBid.toSorted((a, b) => compareHands(b[0], a[0], getHandType, CARD_ORDER));
+let totalWinningsOne = 0;
 sortedHands.forEach((h, i) => {
-  totalWinnings += (i + 1) * h[1];
+  totalWinningsOne += (i + 1) * h[1];
 });
+console.log(`Total winnings without joker: ${totalWinningsOne}`);
 
-console.log(totalWinnings);
+const sortedHandsTwo = handsWithBid.toSorted((a, b) => compareHands(b[0], a[0], getHandTypeWithJoker, CARD_ORDER_WITH_JOKER));
+let totalWinningsTwo = 0;
+sortedHandsTwo.forEach((h, i) => {
+  totalWinningsTwo += (i + 1) * h[1];
+});
+console.log(`Total winnings with joker: ${totalWinningsTwo}`);
