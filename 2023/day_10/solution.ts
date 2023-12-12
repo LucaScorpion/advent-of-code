@@ -11,6 +11,7 @@ const right = { x: 1, y: 0 };
 const left = { x: -1, y: 0 };
 const down = { x: 0, y: 1 };
 const up = { x: 0, y: -1 };
+const allDeltas = [right, left, down, up];
 
 const tileToDeltas: Record<string, Pos[]> = {
   S: [right, left, down, up],
@@ -34,6 +35,13 @@ function posEquals(a: Pos, b: Pos) {
   return a.x === b.x && a.y === b.y;
 }
 
+function addPos(a: Pos, b: Pos) {
+  return ({
+    x: a.x + b.x,
+    y: a.y + b.y,
+  });
+}
+
 function isInBounds(p: Pos) {
   return p.y >= 0 && p.y < lines.length && p.x >= 0 && p.x < lines[p.y].length;
 }
@@ -41,20 +49,14 @@ function isInBounds(p: Pos) {
 function connects(from: Pos, to: Pos) {
   const toTile = lines[to.y][to.x];
   return tileToDeltas[toTile]
-    .map((d) => ({
-      x: to.x + d.x,
-      y: to.y + d.y,
-    }))
+    .map((d) => addPos(to, d))
     .some((p) => posEquals(p, from));
 }
 
 function findConnectingNeighbors(p: Pos) {
   const tile = lines[p.y][p.x];
   return tileToDeltas[tile]
-    .map((d) => ({
-      x: p.x + d.x,
-      y: p.y + d.y,
-    }))
+    .map((d) => addPos(p, d))
     .filter(isInBounds)
     .filter((n) => connects(p, n));
 }
@@ -62,13 +64,12 @@ function findConnectingNeighbors(p: Pos) {
 const distances: Record<string, number> = {};
 const searchQueue: [Pos, number][] = [[start, 0]];
 
-while (searchQueue.length > 0) {
+while (searchQueue.length) {
   const [nextPos, dist] = searchQueue.splice(0, 1)[0];
   const neighbors = findConnectingNeighbors(nextPos);
 
   neighbors.forEach((n) => {
     const nKey = `${n.x};${n.y}`;
-
     if (distances[nKey] == null) {
       distances[nKey] = dist + 1;
       searchQueue.push([n, dist + 1]);
@@ -77,4 +78,7 @@ while (searchQueue.length > 0) {
 }
 
 const maxDist = Math.max(...Object.values(distances));
-console.log(maxDist);
+console.log(`Maximum distance: ${maxDist}`);
+
+// TODO
+// |, JF, 7L are vertical lines, check each line for odd numbers
