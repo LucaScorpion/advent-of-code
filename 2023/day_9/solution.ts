@@ -11,28 +11,39 @@ function diffs(nums: number[]) {
   return result;
 }
 
-const allExtrapolated: number[][][] = [];
-
-lines.forEach((l) => {
-  const extrapolated = [l];
+function extrapolate(row: number[]) {
+  const result = [[...row]];
 
   while (true) {
-    const newDiffs = diffs(extrapolated[extrapolated.length - 1]);
-    extrapolated.push(newDiffs);
+    const newDiffs = diffs(result[result.length - 1]);
+    result.push(newDiffs);
 
     if (newDiffs.every((d) => d === 0)) {
       break;
     }
   }
 
-  for (let i = extrapolated.length - 2; i >= 0; i--) {
-    const cur = extrapolated[i];
-    const below = extrapolated[i + 1];
+  for (let i = result.length - 2; i >= 0; i--) {
+    const cur = result[i];
+    const below = result[i + 1];
     cur.push(cur[cur.length - 1] + below[below.length - 1]);
   }
 
-  allExtrapolated.push(extrapolated);
+  return result;
+}
+
+const rightExtrapolated: number[][][] = [];
+lines.forEach((l) => {
+  rightExtrapolated.push(extrapolate(l));
 });
 
-const res = allExtrapolated.reduce((acc, cur) => acc + cur[0][cur[0].length - 1], 0);
-console.log(res);
+const leftExtrapolated: number[][][] = [];
+lines.forEach((l) => {
+  leftExtrapolated.push(extrapolate(l.toReversed()));
+});
+
+const rightResult = rightExtrapolated.reduce((acc, cur) => acc + cur[0][cur[0].length - 1], 0);
+console.log(`Right extrapolated: ${rightResult}`);
+
+const leftResult = leftExtrapolated.reduce((acc, cur) => acc + cur[0][cur[0].length - 1], 0);
+console.log(`Left extrapolated: ${leftResult}`);
