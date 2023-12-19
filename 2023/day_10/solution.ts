@@ -30,7 +30,6 @@ const start: Pos = {
 };
 start.x = lines[start.y].indexOf('S');
 
-
 function posEquals(a: Pos, b: Pos) {
   return a.x === b.x && a.y === b.y;
 }
@@ -63,6 +62,7 @@ function findConnectingNeighbors(p: Pos) {
 
 const distances: Record<string, number> = {};
 const searchQueue: [Pos, number][] = [[start, 0]];
+const startAdjacents: Pos[] = [];
 
 while (searchQueue.length) {
   const [nextPos, dist] = searchQueue.splice(0, 1)[0];
@@ -73,6 +73,10 @@ while (searchQueue.length) {
     if (distances[nKey] == null) {
       distances[nKey] = dist + 1;
       searchQueue.push([n, dist + 1]);
+
+      if (dist === 0) {
+        startAdjacents.push(n);
+      }
     }
   });
 }
@@ -80,5 +84,53 @@ while (searchQueue.length) {
 const maxDist = Math.max(...Object.values(distances));
 console.log(`Maximum distance: ${maxDist}`);
 
-// TODO
-// |, JF, 7L are vertical lines, check each line for odd numbers
+let startTile = '';
+if (startAdjacents[0].x === startAdjacents[1].x) {
+  startTile = '|';
+} else if (startAdjacents[0].y === startAdjacents[1].y) {
+  startTile = '-';
+} else if (startAdjacents.some((s) => s.x > start.x)) {
+  startTile = startAdjacents.some((s) => s.y > start.y) ? 'F' : 'L'
+} else {
+  startTile = startAdjacents.some((s) => s.y > start.y) ? '7' : 'J';
+}
+
+if (!startTile) {
+  throw new Error('Could not determine start tile.');
+}
+lines[start.y] = lines[start.y].replace('S', startTile);
+
+function isMainLoop(x: number, y: number) {
+  return distances[`${x};${y}`] != null;
+}
+
+const cornerCombos = ['FJ', 'L7'];
+let enclosed = 0;
+lines.forEach((l, y) => {
+  let inside = false;
+  let lastCorner = '';
+
+  for (let x = 0; x < l.length; x++) {
+    if (isMainLoop(x, y)) {
+      const tile = l[x];
+
+      if (tile === '|') {
+        inside = !inside;
+      } else if (tile != '-') {
+        if (lastCorner) {
+          if (cornerCombos.includes(`${lastCorner}${tile}`)) {
+            inside = !inside;
+          }
+
+          lastCorner = '';
+        } else {
+          lastCorner = tile;
+        }
+      }
+    } else if (inside) {
+      enclosed++;
+    }
+  }
+});
+
+console.log(`Enclosed tiles: ${enclosed}`);
