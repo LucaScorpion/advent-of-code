@@ -1,0 +1,2 @@
+Total distance between lists: 765748
+Total similarity between lists: 27732508
