@@ -1,0 +1,2 @@
+Safe reports: 230
+Safe reports with problem dampener: 301
