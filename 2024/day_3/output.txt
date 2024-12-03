@@ -1,0 +1,2 @@
+Sum of all mul operations: 187194524
+Sum of conditional mul operations: 127092535
