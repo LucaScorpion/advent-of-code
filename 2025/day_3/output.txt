@@ -1,0 +1,2 @@
+Total joltage for 2 batteries: 17452
+Total joltage for 12 batteries: 173300819005913

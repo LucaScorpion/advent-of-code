@@ -3,16 +3,18 @@ import * as fs from 'fs';
 const banks = fs.readFileSync(0).toString().trim().split('\n')
   .map((l) => l.split('').map(Number));
 
-function maxJoltage(bank: number[]): number {
-  // Find the largest digit from the bank except the last number.
-  const firstDigit = Math.max(...bank.slice(0, bank.length - 1));
-  const firstDigitIndex = bank.indexOf(firstDigit);
+function maxJoltage(bank: number[], amount: number): number {
+  // Find the largest digit from the bank except any of the n-th last numbers.
+  const digit = Math.max(...bank.slice(0, bank.length - (amount - 1)));
+  const digitIndex = bank.indexOf(digit);
 
-  // Find the second digit from the part of the bank right of the first digit.
-  const secondDigit = Math.max(...bank.slice(firstDigitIndex + 1));
+  if (amount === 1) {
+    return digit;
+  }
 
-  return Number(`${firstDigit}${secondDigit}`);
+  const subJoltage = maxJoltage(bank.slice(digitIndex + 1), amount - 1);
+  return Number(`${digit}${subJoltage}`);
 }
 
-const totalJoltage = banks.reduce((acc, cur) => acc + maxJoltage(cur), 0);
-console.log(`Total joltage: ${totalJoltage}`);
+console.log(`Total joltage for 2 batteries: ${banks.reduce((acc, cur) => acc + maxJoltage(cur, 2), 0)}`);
+console.log(`Total joltage for 12 batteries: ${banks.reduce((acc, cur) => acc + maxJoltage(cur, 12), 0)}`);
